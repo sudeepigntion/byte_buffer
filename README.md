@@ -20,3 +20,8 @@ ByteBuffer Generator
     It is 2-3 times faster than protobuff and flatbuffer. Depending on the structure of the class
     Currently supporting only Golang, upcoming language support: C#, Java, Javascript and Rust
     For sample example check the file generated using sample.bb (sample.go, sample_encoder.go and sample_decoder.go)
+
+    To run the generator
+    1. Install Golang
+    2. Create a bytebuffer class with .bb extension for sample check (sample.bb)
+    3. Then run go run bytebuffer.go -fileName=yourbytebufferfile.bb -language=golang -package=yourpackagename
