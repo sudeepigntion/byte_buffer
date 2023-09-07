@@ -1,0 +1,16 @@
+namespace MySchema;
+
+table Employees {
+  Name: string;
+  Salary: float;
+}
+
+table Person {
+  Epoch: long;
+  Watch: string;
+  Xyz: short;
+  Salary: float;
+  Employee: [Employees];
+}
+
+root_type Person;
