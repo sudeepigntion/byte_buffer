@@ -5,17 +5,20 @@ ByteBuffer Generator
     
     It will generate 3 files (1 class file, 1 encoder file, and 1 decoder file)
     
-    Encoding........................
-    bytebuffer encoding:  3.01875ms
-    bytebuffer length:  2200076
-    json encoding:  16.064125ms
-    json length:  7100252
-    xml encoding:  41.675542ms
-    xml length:  6600232
+    bytebuffer encoding:  2.248166ms
+    bytebuffer length:  2200034
+    flatbuffer encoding:  5.553375ms
+    flatbuffer length:  3200080
+    json encoding:  17.163375ms
+    json length:  7100112
+    xml encoding:  44.349833ms
+    xml length:  6600102
     Decoding........................
-    bytebuffer decoding:  884.25µs
-    json decoding:  69.766083ms
-    xml decoding:  188.862208ms
+    bytebuffer decoding:  1.43675ms
+    flatbuffer decoding:  977.875µs
+    json decoding:  71.695167ms
+    xml decoding:  196.764875ms
+
     
     It is 2-3 times faster than protobuff and flatbuffer. Depending on the structure of the class
     Currently supporting only Golang, upcoming language support: C#, Java, Javascript and Rust
