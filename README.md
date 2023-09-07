@@ -5,19 +5,21 @@ ByteBuffer Generator
     
     It will generate 3 files (1 class file, 1 encoder file, and 1 decoder file)
     
-    bytebuffer encoding:  2.248166ms
+    Encoding........................
+    bytebuffer encoding:  2.457833ms
     bytebuffer length:  2200034
-    flatbuffer encoding:  5.553375ms
+    flatbuffer encoding:  5.342459ms
     flatbuffer length:  3200080
-    json encoding:  17.163375ms
+    json encoding:  16.184833ms
     json length:  7100112
-    xml encoding:  44.349833ms
+    xml encoding:  43.585417ms
     xml length:  6600102
     Decoding........................
-    bytebuffer decoding:  1.43675ms
-    flatbuffer decoding:  977.875µs
-    json decoding:  71.695167ms
-    xml decoding:  196.764875ms
+    bytebuffer decoding:  578.708µs
+    flatbuffer decoding:  992.292µs
+    json decoding:  69.930208ms
+    xml decoding:  189.59925ms
+
 
     
     It is 2-3 times faster than protobuff and flatbuffer. Depending on the structure of the class
