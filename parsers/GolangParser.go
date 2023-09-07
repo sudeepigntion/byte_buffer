@@ -68,19 +68,11 @@ func GenerateGolangStruct(classDefinitions string, rootClassName *string, global
 
 				tempMap[currentStructName] = append(tempMap[currentStructName], fieldName+":"+fieldType)
 
-				newFieldType := ""
-				switch fieldType {
-				case "long":
-					newFieldType = "int"
-				case "short":
-					newFieldType = "int"
-				case "float":
-					newFieldType = "float64"
-				default:
-					newFieldType = fieldType
-				}
+				fieldType = strings.ReplaceAll(fieldType, "long", "int")
+				fieldType = strings.ReplaceAll(fieldType, "short", "int")
+				fieldType = strings.ReplaceAll(fieldType, "float", "float64")
 
-				structs[currentStructName] = append(structs[currentStructName], StructField{Name: fieldName, Type: newFieldType})
+				structs[currentStructName] = append(structs[currentStructName], StructField{Name: fieldName, Type: fieldType})
 			}
 		} else {
 			pattern := `export\s*=\s*(\w+)`
@@ -408,39 +400,48 @@ func GenerateGolangDecoderCode(currentIterate *int, stringData *string, node *Tr
 		case "int":
 			if child.ArrayCount > 0 {
 				squares := ""
+				arrayCount := child.ArrayCount
 				for i := 0; i < child.ArrayCount; i++ {
 					if i == 0 {
+
+						arrayBraces := ""
+
+						for j := 0; j < arrayCount; j++ {
+							arrayBraces += "[]"
+						}
+
 						*stringData += `
 				    ` + child.Name + `ArrLen` + strconv.Itoa(i) + ` := bb.GetShort()
 				`
+						*stringData += path + squares + `= make(` + arrayBraces + `int, ` + child.Name + `ArrLen` + strconv.Itoa(i) + `)`
+
 						*stringData += `
 							for index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `:=0;index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `<` + child.Name + `ArrLen` + strconv.Itoa(i) + `;index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `++{
 						`
 
-						if child.ArrayCount == 1 {
-							*stringData += path + squares + `= append(` + path + squares + `, 0)`
-						} else {
-							*stringData += path + squares + `= append(` + path + squares + `, nil)`
-						}
-
 						squares += `[index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `]`
 					} else {
+
+						arrayBraces := ""
+
+						for j := 0; j < arrayCount; j++ {
+							arrayBraces += "[]"
+						}
+
 						*stringData += `
 						` + child.Name + `ArrLen` + strconv.Itoa(i) + ` := bb.GetShort()
 						`
 
+						*stringData += path + squares + `= make(` + arrayBraces + `int, ` + child.Name + `ArrLen` + strconv.Itoa(i) + `)`
+
 						*stringData += `
 							for index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `:=0;index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `<` + child.Name + `ArrLen` + strconv.Itoa(i) + `;index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `++{
 						`
 
-						if i == (child.ArrayCount - 1) {
-							*stringData += path + squares + `= append(` + path + squares + `, 0)`
-						} else {
-							*stringData += path + squares + `= append(` + path + squares + `, nil)`
-						}
-
 						squares += `[index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `]`
 					}
+
+					arrayCount -= 1
 				}
 
 				*stringData += `
@@ -460,39 +461,48 @@ func GenerateGolangDecoderCode(currentIterate *int, stringData *string, node *Tr
 		case "long":
 			if child.ArrayCount > 0 {
 				squares := ""
+				arrayCount := child.ArrayCount
 				for i := 0; i < child.ArrayCount; i++ {
 					if i == 0 {
+
+						arrayBraces := ""
+
+						for j := 0; j < arrayCount; j++ {
+							arrayBraces += "[]"
+						}
+
 						*stringData += `
 				    ` + child.Name + `ArrLen` + strconv.Itoa(i) + ` := bb.GetShort()
 				`
+						*stringData += path + squares + `= make(` + arrayBraces + `int, ` + child.Name + `ArrLen` + strconv.Itoa(i) + `)`
+
 						*stringData += `
 							for index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `:=0;index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `<` + child.Name + `ArrLen` + strconv.Itoa(i) + `;index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `++{
 						`
 
-						if child.ArrayCount == 1 {
-							*stringData += path + squares + `= append(` + path + squares + `, 0)`
-						} else {
-							*stringData += path + squares + `= append(` + path + squares + `, nil)`
-						}
-
 						squares += `[index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `]`
 					} else {
+
+						arrayBraces := ""
+
+						for j := 0; j < arrayCount; j++ {
+							arrayBraces += "[]"
+						}
+
 						*stringData += `
 						` + child.Name + `ArrLen` + strconv.Itoa(i) + ` := bb.GetShort()
 						`
 
+						*stringData += path + squares + `= make(` + arrayBraces + `int, ` + child.Name + `ArrLen` + strconv.Itoa(i) + `)`
+
 						*stringData += `
 							for index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `:=0;index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `<` + child.Name + `ArrLen` + strconv.Itoa(i) + `;index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `++{
 						`
 
-						if i == (child.ArrayCount - 1) {
-							*stringData += path + squares + `= append(` + path + squares + `, 0)`
-						} else {
-							*stringData += path + squares + `= append(` + path + squares + `, nil)`
-						}
-
 						squares += `[index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `]`
 					}
+
+					arrayCount -= 1
 				}
 
 				*stringData += `
@@ -512,39 +522,48 @@ func GenerateGolangDecoderCode(currentIterate *int, stringData *string, node *Tr
 		case "short":
 			if child.ArrayCount > 0 {
 				squares := ""
+				arrayCount := child.ArrayCount
 				for i := 0; i < child.ArrayCount; i++ {
 					if i == 0 {
+
+						arrayBraces := ""
+
+						for j := 0; j < arrayCount; j++ {
+							arrayBraces += "[]"
+						}
+
 						*stringData += `
 				    ` + child.Name + `ArrLen` + strconv.Itoa(i) + ` := bb.GetShort()
 				`
+						*stringData += path + squares + `= make(` + arrayBraces + `int, ` + child.Name + `ArrLen` + strconv.Itoa(i) + `)`
+
 						*stringData += `
 							for index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `:=0;index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `<` + child.Name + `ArrLen` + strconv.Itoa(i) + `;index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `++{
 						`
 
-						if child.ArrayCount == 1 {
-							*stringData += path + squares + `= append(` + path + squares + `, 0)`
-						} else {
-							*stringData += path + squares + `= append(` + path + squares + `, nil)`
-						}
-
 						squares += `[index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `]`
 					} else {
+
+						arrayBraces := ""
+
+						for j := 0; j < arrayCount; j++ {
+							arrayBraces += "[]"
+						}
+
 						*stringData += `
 						` + child.Name + `ArrLen` + strconv.Itoa(i) + ` := bb.GetShort()
 						`
 
+						*stringData += path + squares + `= make(` + arrayBraces + `int, ` + child.Name + `ArrLen` + strconv.Itoa(i) + `)`
+
 						*stringData += `
 							for index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `:=0;index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `<` + child.Name + `ArrLen` + strconv.Itoa(i) + `;index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `++{
 						`
 
-						if i == (child.ArrayCount - 1) {
-							*stringData += path + squares + `= append(` + path + squares + `, 0)`
-						} else {
-							*stringData += path + squares + `= append(` + path + squares + `, nil)`
-						}
-
 						squares += `[index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `]`
 					}
+
+					arrayCount -= 1
 				}
 
 				*stringData += `
@@ -564,39 +583,48 @@ func GenerateGolangDecoderCode(currentIterate *int, stringData *string, node *Tr
 		case "string":
 			if child.ArrayCount > 0 {
 				squares := ""
+				arrayCount := child.ArrayCount
 				for i := 0; i < child.ArrayCount; i++ {
 					if i == 0 {
+
+						arrayBraces := ""
+
+						for j := 0; j < arrayCount; j++ {
+							arrayBraces += "[]"
+						}
+
 						*stringData += `
 				    ` + child.Name + `ArrLen` + strconv.Itoa(i) + ` := bb.GetShort()
 				`
+						*stringData += path + squares + `= make(` + arrayBraces + `string, ` + child.Name + `ArrLen` + strconv.Itoa(i) + `)`
+
 						*stringData += `
 							for index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `:=0;index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `<` + child.Name + `ArrLen` + strconv.Itoa(i) + `;index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `++{
 						`
 
-						if child.ArrayCount == 1 {
-							*stringData += path + squares + `= append(` + path + squares + `, "")`
-						} else {
-							*stringData += path + squares + `= append(` + path + squares + `, nil)`
-						}
-
 						squares += `[index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `]`
 					} else {
+
+						arrayBraces := ""
+
+						for j := 0; j < arrayCount; j++ {
+							arrayBraces += "[]"
+						}
+
 						*stringData += `
 						` + child.Name + `ArrLen` + strconv.Itoa(i) + ` := bb.GetShort()
 						`
 
+						*stringData += path + squares + `= make(` + arrayBraces + `string, ` + child.Name + `ArrLen` + strconv.Itoa(i) + `)`
+
 						*stringData += `
 							for index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `:=0;index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `<` + child.Name + `ArrLen` + strconv.Itoa(i) + `;index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `++{
 						`
 
-						if i == (child.ArrayCount - 1) {
-							*stringData += path + squares + `= append(` + path + squares + `, "")`
-						} else {
-							*stringData += path + squares + `= append(` + path + squares + `, nil)`
-						}
-
 						squares += `[index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `]`
 					}
+
+					arrayCount -= 1
 				}
 
 				*stringData += `
@@ -616,39 +644,48 @@ func GenerateGolangDecoderCode(currentIterate *int, stringData *string, node *Tr
 		case "float":
 			if child.ArrayCount > 0 {
 				squares := ""
+				arrayCount := child.ArrayCount
 				for i := 0; i < child.ArrayCount; i++ {
 					if i == 0 {
+
+						arrayBraces := ""
+
+						for j := 0; j < arrayCount; j++ {
+							arrayBraces += "[]"
+						}
+
 						*stringData += `
 				    ` + child.Name + `ArrLen` + strconv.Itoa(i) + ` := bb.GetShort()
 				`
+						*stringData += path + squares + `= make(` + arrayBraces + `float64, ` + child.Name + `ArrLen` + strconv.Itoa(i) + `)`
+
 						*stringData += `
 							for index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `:=0;index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `<` + child.Name + `ArrLen` + strconv.Itoa(i) + `;index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `++{
 						`
 
-						if child.ArrayCount == 1 {
-							*stringData += path + squares + `= append(` + path + squares + `, 0.0)`
-						} else {
-							*stringData += path + squares + `= append(` + path + squares + `, nil)`
-						}
-
 						squares += `[index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `]`
 					} else {
+
+						arrayBraces := ""
+
+						for j := 0; j < arrayCount; j++ {
+							arrayBraces += "[]"
+						}
+
 						*stringData += `
 						` + child.Name + `ArrLen` + strconv.Itoa(i) + ` := bb.GetShort()
 						`
 
+						*stringData += path + squares + `= make(` + arrayBraces + `float64, ` + child.Name + `ArrLen` + strconv.Itoa(i) + `)`
+
 						*stringData += `
 							for index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `:=0;index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `<` + child.Name + `ArrLen` + strconv.Itoa(i) + `;index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `++{
 						`
 
-						if i == (child.ArrayCount - 1) {
-							*stringData += path + squares + `= append(` + path + squares + `, 0.0)`
-						} else {
-							*stringData += path + squares + `= append(` + path + squares + `, nil)`
-						}
-
 						squares += `[index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `]`
 					}
+
+					arrayCount -= 1
 				}
 
 				*stringData += `
@@ -668,39 +705,48 @@ func GenerateGolangDecoderCode(currentIterate *int, stringData *string, node *Tr
 		case "bool":
 			if child.ArrayCount > 0 {
 				squares := ""
+				arrayCount := child.ArrayCount
 				for i := 0; i < child.ArrayCount; i++ {
 					if i == 0 {
+
+						arrayBraces := ""
+
+						for j := 0; j < arrayCount; j++ {
+							arrayBraces += "[]"
+						}
+
 						*stringData += `
 				    ` + child.Name + `ArrLen` + strconv.Itoa(i) + ` := bb.GetShort()
 				`
+						*stringData += path + squares + `= make(` + arrayBraces + `bool, ` + child.Name + `ArrLen` + strconv.Itoa(i) + `)`
+
 						*stringData += `
 							for index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `:=0;index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `<` + child.Name + `ArrLen` + strconv.Itoa(i) + `;index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `++{
 						`
 
-						if child.ArrayCount == 1 {
-							*stringData += path + squares + `= append(` + path + squares + `, false)`
-						} else {
-							*stringData += path + squares + `= append(` + path + squares + `, nil)`
-						}
-
 						squares += `[index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `]`
 					} else {
+
+						arrayBraces := ""
+
+						for j := 0; j < arrayCount; j++ {
+							arrayBraces += "[]"
+						}
+
 						*stringData += `
 						` + child.Name + `ArrLen` + strconv.Itoa(i) + ` := bb.GetShort()
 						`
 
+						*stringData += path + squares + `= make(` + arrayBraces + `bool, ` + child.Name + `ArrLen` + strconv.Itoa(i) + `)`
+
 						*stringData += `
 							for index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `:=0;index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `<` + child.Name + `ArrLen` + strconv.Itoa(i) + `;index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `++{
 						`
 
-						if i == (child.ArrayCount - 1) {
-							*stringData += path + squares + `= append(` + path + squares + `, false)`
-						} else {
-							*stringData += path + squares + `= append(` + path + squares + `, nil)`
-						}
-
 						squares += `[index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `]`
 					}
+
+					arrayCount -= 1
 				}
 
 				*stringData += `
@@ -721,24 +767,30 @@ func GenerateGolangDecoderCode(currentIterate *int, stringData *string, node *Tr
 
 			if child.ArrayCount > 0 {
 				squares := ""
+				arrayCount := child.ArrayCount
 				for i := 0; i < child.ArrayCount; i++ {
+
+					arrayBraces := ""
+
+					for j := 0; j < arrayCount; j++ {
+						arrayBraces += "[]"
+					}
+
 					*stringData += `
 					` + child.Name + `ArrLen` + strconv.Itoa(i) + ` := bb.GetShort()
 				`
+
+					*stringData += path + `= make(` + arrayBraces + child.Value + `, ` + child.Name + `ArrLen` + strconv.Itoa(i) + `)`
+
 					*stringData += `
 							for index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `:=0;index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `<` + child.Name + `ArrLen` + strconv.Itoa(i) + `;index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `++{
 						`
-
-					if i == (child.ArrayCount - 1) {
-						*stringData += path + `= append(` + path + `, ` + child.Value + `{})`
-					} else {
-						*stringData += path + `= append(` + path + `, nil)`
-					}
 
 					squares += `[index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `]`
 
 					path += `[index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `]`
 					*currentIterate += 1
+					arrayCount -= 1
 				}
 			}
 
