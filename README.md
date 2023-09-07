@@ -18,3 +18,4 @@ ByteBuffer Generator
     xml decoding:  188.862208ms
     
     It is 2-3 times faster than protobuff and flatbuffer. Depending on the structure of the class
+    Currently supporting only Golang, upcoming language support: C#, Java, Javascript and Rust
