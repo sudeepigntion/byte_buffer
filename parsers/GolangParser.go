@@ -902,3 +902,155 @@ func WriteStructData(modelFileName string, finalStruct string) {
 		log.Fatal(err)
 	}
 }
+
+func EncoderCodeGeneration(rootClassName RootClass, stringDataEncoder *string, packageName *string, fileName *string, treeNode *TreeNode) {
+
+	currentIterate := 0
+
+	squareBrackets := ""
+	for i := 0; i < rootClassName.ArrayCount; i++ {
+		squareBrackets += "[]"
+	}
+
+	totalParentBraces := ""
+	*stringDataEncoder = `
+
+		package ` + *packageName + `
+
+		import(
+			"github.com/bytebuffer_parser/parsers"
+		)
+
+		func ` + strings.ToUpper(*fileName) + `_Encoder(obj ` + squareBrackets + rootClassName.Name + `) []byte{
+
+			bb := parsers.Buffer{
+				FloatIntEncoderVal: 10000.0,
+				Endian: "big",
+			}
+	`
+
+	if squareBrackets != "" {
+		for i := 0; i < rootClassName.ArrayCount; i++ {
+			if i == 0 {
+				*stringDataEncoder += `
+			bb.PutShort(len(obj))
+	`
+				*stringDataEncoder += `
+				for i` + strconv.Itoa(i) + `:=0;i` + strconv.Itoa(i) + `<len(obj);i` + strconv.Itoa(i) + `++{
+	`
+			} else {
+				*stringDataEncoder += `
+			bb.PutShort(len(obj` + totalParentBraces + `))
+	`
+				*stringDataEncoder += `
+				for i` + strconv.Itoa(i) + `:=0;i` + strconv.Itoa(i) + `<len(obj` + totalParentBraces + `);i` + strconv.Itoa(i) + `++{
+	`
+			}
+
+			totalParentBraces += "[i" + strconv.Itoa(i) + "]"
+		}
+
+	}
+
+	totalParentBraces = "obj" + totalParentBraces + "."
+
+	GenerateGolangEncodeCode(&currentIterate, stringDataEncoder, treeNode, totalParentBraces)
+
+	if squareBrackets != "" {
+		for i := 0; i < rootClassName.ArrayCount; i++ {
+			*stringDataEncoder += `
+			}
+				`
+		}
+	}
+
+	*stringDataEncoder += `
+			return bb.Array()
+		}
+	`
+}
+
+func DecoderCodeGeneration(rootClassName RootClass, stringDataDecoder *string, packageName *string, fileName *string, treeNode *TreeNode) {
+	squareBrackets := ""
+
+	for i := 0; i < rootClassName.ArrayCount; i++ {
+		squareBrackets += "[]"
+	}
+
+	totalParentBraces := ""
+
+	currentIterate := 0
+	rootArrayClass := ""
+
+	if squareBrackets != "" {
+		rootArrayClass = "obj := make(" + squareBrackets + rootClassName.Name + ", " + strconv.Itoa(rootClassName.ArrayCount) + ")"
+	} else {
+		rootArrayClass = "obj := " + rootClassName.Name + "{}"
+	}
+
+	*stringDataDecoder = `
+
+	package ` + *packageName + `
+
+	import(
+		"github.com/bytebuffer_parser/parsers"
+	)
+
+	func ` + strings.ToUpper(*fileName) + `_Decoder(byteArr []byte) ` + squareBrackets + rootClassName.Name + `{
+
+		bb := parsers.Buffer{
+			FloatIntEncoderVal: 10000.0,
+			Endian: "big",
+		}
+
+		bb.Wrap(byteArr)
+
+		` + rootArrayClass + `
+`
+	if squareBrackets != "" {
+		innerbracesCount := rootClassName.ArrayCount - 1
+		for i := 0; i < rootClassName.ArrayCount; i++ {
+			if i == 0 {
+				*stringDataDecoder += `
+		for i` + strconv.Itoa(i) + `:=0;i` + strconv.Itoa(i) + `<len(obj);i` + strconv.Itoa(i) + `++{
+`
+			} else {
+
+				nestedSquareBrackets := ""
+
+				for j := 0; j < innerbracesCount; j++ {
+					nestedSquareBrackets += "[]"
+				}
+
+				innerbracesCount -= 1
+
+				*stringDataDecoder += `
+				obj` + totalParentBraces + ` = make(` + nestedSquareBrackets + rootClassName.Name + `, len(obj` + totalParentBraces + `))
+`
+				*stringDataDecoder += `
+		for i` + strconv.Itoa(i) + `:=0;i` + strconv.Itoa(i) + `<len(obj` + totalParentBraces + `);i` + strconv.Itoa(i) + `++{
+`
+			}
+
+			totalParentBraces += "[i" + strconv.Itoa(i) + "]"
+		}
+
+	}
+
+	totalParentBraces = "obj" + totalParentBraces + "."
+
+	GenerateGolangDecoderCode(&currentIterate, stringDataDecoder, treeNode, totalParentBraces)
+
+	if squareBrackets != "" {
+		for i := 0; i < rootClassName.ArrayCount; i++ {
+			*stringDataDecoder += `
+		}
+			`
+		}
+	}
+
+	*stringDataDecoder += `
+		return obj
+	}
+`
+}
