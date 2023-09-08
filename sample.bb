@@ -11,4 +11,4 @@ class Person {
     []Employees Employee
 }
 
-export = Person
+export = []Person
