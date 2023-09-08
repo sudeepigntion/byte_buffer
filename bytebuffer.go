@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/bytebuffer_parser/parsers"
@@ -37,7 +38,7 @@ func main() {
 	encoderFileName := ""
 	decoderFileName := ""
 
-	var rootClassName string
+	rootClassName := parsers.RootClass{}
 	globalMap := make(map[string][]string)
 
 	// specific to golang
@@ -49,7 +50,7 @@ func main() {
 		decoderFileName = *fileName + "_decoder.go"
 
 		// generate struct out of it
-		totalContent = parsers.GenerateGolangStruct(contentAsString, &rootClassName, &globalMap)
+		totalContent, rootClassName = parsers.GenerateGolangStruct(contentAsString, rootClassName, &globalMap)
 		break
 	default:
 		log.Fatal("Invalid language...")
@@ -68,8 +69,8 @@ func main() {
 	}
 
 	// Create the root node
-	treeNode := &parsers.TreeNode{Value: rootClassName}
-	createTreeNode(treeNode, globalMap, rootClassName)
+	treeNode := &parsers.TreeNode{Value: rootClassName.Name}
+	createTreeNode(treeNode, globalMap, rootClassName.Name)
 
 	currentIterate := 0
 	stringDataEncoder := ""
@@ -77,6 +78,13 @@ func main() {
 
 	switch *language {
 	case "golang":
+
+		squareBrackets := ""
+		for i := 0; i < rootClassName.ArrayCount; i++ {
+			squareBrackets += "[]"
+		}
+
+		totalParentBraces := ""
 		stringDataEncoder = `
 
 		package ` + *packageName + `
@@ -85,14 +93,49 @@ func main() {
 			"github.com/bytebuffer_parser/parsers"
 		)
 
-		func ` + strings.ToUpper(*fileName) + `_Encoder(obj ` + rootClassName + `) []byte{
+		func ` + strings.ToUpper(*fileName) + `_Encoder(obj ` + squareBrackets + rootClassName.Name + `) []byte{
 
 			bb := parsers.Buffer{
 				FloatIntEncoderVal: 10000.0,
 				Endian: "big",
 			}
 	`
-		parsers.GenerateGolangEncodeCode(&currentIterate, &stringDataEncoder, treeNode, "obj.")
+
+		if squareBrackets != "" {
+			for i := 0; i < rootClassName.ArrayCount; i++ {
+				if i == 0 {
+					stringDataEncoder += `
+			bb.PutShort(len(obj))
+	`
+					stringDataEncoder += `
+				for i` + strconv.Itoa(i) + `:=0;i` + strconv.Itoa(i) + `<len(obj);i` + strconv.Itoa(i) + `++{
+	`
+				} else {
+					stringDataEncoder += `
+			bb.PutShort(len(obj` + totalParentBraces + `))
+	`
+					stringDataEncoder += `
+				for i` + strconv.Itoa(i) + `:=0;i` + strconv.Itoa(i) + `<len(obj` + totalParentBraces + `);i` + strconv.Itoa(i) + `++{
+	`
+				}
+
+				totalParentBraces += "[i" + strconv.Itoa(i) + "]"
+			}
+
+		}
+
+		totalParentBraces = "obj" + totalParentBraces + "."
+
+		parsers.GenerateGolangEncodeCode(&currentIterate, &stringDataEncoder, treeNode, totalParentBraces)
+
+		if squareBrackets != "" {
+			for i := 0; i < rootClassName.ArrayCount; i++ {
+				stringDataEncoder += `
+			}
+				`
+			}
+		}
+
 		stringDataEncoder += `
 			return bb.Array()
 		}
@@ -115,7 +158,24 @@ func main() {
 
 	switch *language {
 	case "golang":
+
+		squareBrackets := ""
+
+		for i := 0; i < rootClassName.ArrayCount; i++ {
+			squareBrackets += "[]"
+		}
+
+		totalParentBraces := ""
+
 		currentIterate = 0
+		rootArrayClass := ""
+
+		if squareBrackets != "" {
+			rootArrayClass = "obj := make(" + squareBrackets + rootClassName.Name + ", " + strconv.Itoa(rootClassName.ArrayCount) + ")"
+		} else {
+			rootArrayClass = "obj := " + rootClassName.Name + "{}"
+		}
+
 		stringDataDecoder = `
 
 		package ` + *packageName + `
@@ -124,9 +184,7 @@ func main() {
 			"github.com/bytebuffer_parser/parsers"
 		)
 
-		func ` + strings.ToUpper(*fileName) + `_Decoder(byteArr []byte) ` + rootClassName + `{
-
-			obj := ` + rootClassName + `{}
+		func ` + strings.ToUpper(*fileName) + `_Decoder(byteArr []byte) ` + squareBrackets + rootClassName.Name + `{
 
 			bb := parsers.Buffer{
 				FloatIntEncoderVal: 10000.0,
@@ -134,8 +192,50 @@ func main() {
 			}
 
 			bb.Wrap(byteArr)
+
+			` + rootArrayClass + `
 	`
-		parsers.GenerateGolangDecoderCode(&currentIterate, &stringDataDecoder, treeNode, "obj.")
+		if squareBrackets != "" {
+			innerbracesCount := rootClassName.ArrayCount - 1
+			for i := 0; i < rootClassName.ArrayCount; i++ {
+				if i == 0 {
+					stringDataDecoder += `
+			for i` + strconv.Itoa(i) + `:=0;i` + strconv.Itoa(i) + `<len(obj);i` + strconv.Itoa(i) + `++{
+`
+				} else {
+
+					nestedSquareBrackets := ""
+
+					for j := 0; j < innerbracesCount; j++ {
+						nestedSquareBrackets += "[]"
+					}
+
+					innerbracesCount -= 1
+
+					stringDataDecoder += `
+					obj` + totalParentBraces + ` = make(` + nestedSquareBrackets + rootClassName.Name + `, len(obj` + totalParentBraces + `))
+`
+					stringDataDecoder += `
+			for i` + strconv.Itoa(i) + `:=0;i` + strconv.Itoa(i) + `<len(obj` + totalParentBraces + `);i` + strconv.Itoa(i) + `++{
+`
+				}
+
+				totalParentBraces += "[i" + strconv.Itoa(i) + "]"
+			}
+
+		}
+
+		totalParentBraces = "obj" + totalParentBraces + "."
+
+		parsers.GenerateGolangDecoderCode(&currentIterate, &stringDataDecoder, treeNode, totalParentBraces)
+
+		if squareBrackets != "" {
+			for i := 0; i < rootClassName.ArrayCount; i++ {
+				stringDataDecoder += `
+			}
+				`
+			}
+		}
 
 		stringDataDecoder += `
 			return obj
@@ -155,27 +255,6 @@ func main() {
 		log.Fatal("Invalid language...")
 	}
 
-}
-
-func countSquareBrackets(input string) (bool, int) {
-	// Split the input into characters
-	characters := strings.Split(input, "")
-
-	// Initialize counters for open and close square brackets
-	openCount := 0
-	closeCount := 0
-
-	// Iterate through the characters and count square brackets
-	for _, char := range characters {
-		if char == "[" {
-			openCount++
-		} else if char == "]" {
-			closeCount++
-		}
-	}
-
-	// Return the minimum count (as open and close brackets must match)
-	return (openCount == closeCount), openCount
 }
 
 func matchDataType(globalMap map[string][]string, fieldType string) bool {
@@ -216,7 +295,7 @@ func createTreeNode(node *parsers.TreeNode, globalMap map[string][]string, rootC
 				log.Fatal("Invalid datatype ", fieldType)
 			}
 
-			stat, bracketCount := countSquareBrackets(fieldType)
+			stat, bracketCount := parsers.CountSquareBrackets(fieldType)
 			if !stat {
 				log.Fatal("Invalid [] in the bytebuffer file...")
 			}

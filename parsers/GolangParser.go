@@ -17,13 +17,39 @@ type TreeNode struct {
 	Children   []*TreeNode
 }
 
+type RootClass struct {
+	Name       string
+	ArrayCount int
+}
+
 // StructField represents a struct field with name and type.
 type StructField struct {
 	Name string
 	Type string
 }
 
-func GenerateGolangStruct(classDefinitions string, rootClassName *string, globalMap *map[string][]string) string {
+func CountSquareBrackets(input string) (bool, int) {
+	// Split the input into characters
+	characters := strings.Split(input, "")
+
+	// Initialize counters for open and close square brackets
+	openCount := 0
+	closeCount := 0
+
+	// Iterate through the characters and count square brackets
+	for _, char := range characters {
+		if char == "[" {
+			openCount++
+		} else if char == "]" {
+			closeCount++
+		}
+	}
+
+	// Return the minimum count (as open and close brackets must match)
+	return (openCount == closeCount), openCount
+}
+
+func GenerateGolangStruct(classDefinitions string, rootClassName RootClass, globalMap *map[string][]string) (string, RootClass) {
 
 	tempMap := *globalMap
 
@@ -75,16 +101,23 @@ func GenerateGolangStruct(classDefinitions string, rootClassName *string, global
 				structs[currentStructName] = append(structs[currentStructName], StructField{Name: fieldName, Type: fieldType})
 			}
 		} else {
-			pattern := `export\s*=\s*(\w+)`
-			// Compile the regular expression
-			re := regexp.MustCompile(pattern)
 
-			// Find the first match in the input string
-			matches := re.FindStringSubmatch(line)
+			line = strings.ReplaceAll(line, " ", "")
 
-			if len(matches) >= 2 {
-				*rootClassName = matches[1]
+			lines = strings.Split(line, "=")
+
+			if len(lines) != 2 {
+				continue
 			}
+
+			stat, arrayCount := CountSquareBrackets(lines[1])
+
+			if !stat {
+				log.Fatal("Invalid array [] in root export class ", lines[1])
+			}
+			rootClassName.ArrayCount = arrayCount
+
+			rootClassName.Name = strings.ReplaceAll(lines[1], "[]", "")
 		}
 	}
 
@@ -97,7 +130,7 @@ func GenerateGolangStruct(classDefinitions string, rootClassName *string, global
 		goCode += "}\n\n"
 	}
 
-	return goCode
+	return goCode, rootClassName
 }
 
 func GenerateGolangEncodeCode(currentIterate *int, stringData *string, node *TreeNode, parentName string) {
