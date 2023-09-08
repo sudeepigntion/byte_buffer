@@ -918,10 +918,11 @@ func EncoderCodeGeneration(rootClassName RootClass, stringDataEncoder *string, p
 		package ` + *packageName + `
 
 		import(
+			"github.com/golang/snappy"
 			"github.com/bytebuffer_parser/parsers"
 		)
 
-		func ` + strings.ToUpper(*fileName) + `_Encoder(obj ` + squareBrackets + rootClassName.Name + `) []byte{
+		func ` + strings.ToUpper(*fileName) + `_Encoder(compression bool, obj ` + squareBrackets + rootClassName.Name + `) []byte{
 
 			bb := parsers.Buffer{
 				FloatIntEncoderVal: 10000.0,
@@ -965,7 +966,16 @@ func EncoderCodeGeneration(rootClassName RootClass, stringDataEncoder *string, p
 	}
 
 	*stringDataEncoder += `
-			return bb.Array()
+
+			var compressedData []byte
+
+			if compression{
+				compressedData =  snappy.Encode(nil, bb.Array())
+			}else{
+				compressedData = bb.Array()
+			}
+
+			return compressedData
 		}
 	`
 }
@@ -993,17 +1003,29 @@ func DecoderCodeGeneration(rootClassName RootClass, stringDataDecoder *string, p
 	package ` + *packageName + `
 
 	import(
+		"log"
+		"github.com/golang/snappy"
 		"github.com/bytebuffer_parser/parsers"
 	)
 
-	func ` + strings.ToUpper(*fileName) + `_Decoder(byteArr []byte) ` + squareBrackets + rootClassName.Name + `{
+	func ` + strings.ToUpper(*fileName) + `_Decoder(compression bool, byteArr []byte) ` + squareBrackets + rootClassName.Name + `{
 
 		bb := parsers.Buffer{
 			FloatIntEncoderVal: 10000.0,
 			Endian: "big",
 		}
 
-		bb.Wrap(byteArr)
+		if compression{
+			decompressedData, err := snappy.Decode(nil, byteArr)
+
+			if err != nil {
+				log.Fatal("Failed to decompress data...")
+			}
+
+			bb.Wrap(decompressedData)
+		}else{
+			bb.Wrap(byteArr)
+		}
 
 		` + rootArrayClass + `
 `

@@ -40,6 +40,16 @@ func (obj *Buffer) GetInt() []byte {
 
 }
 
+func (obj *Buffer) GetShortInt() []byte {
+
+	intValue := obj.byteData[obj.Offset : obj.Offset+2]
+
+	obj.Offset += 2
+
+	return intValue
+
+}
+
 func (obj *Buffer) GetInteger() int {
 
 	intValue := obj.byteData[obj.Offset : obj.Offset+4]
@@ -98,9 +108,26 @@ func (obj *Buffer) GetByte() []byte {
 
 func (obj *Buffer) GetString() string {
 
-	strLen := int(binary.BigEndian.Uint32(obj.GetInt()))
-	stringData := string(obj.Get(strLen))
-	if stringData == "XXXX" {
+	typeString := obj.GetByte()[0]
+	stringData := ""
+	switch typeString {
+	case 1:
+		strLen := obj.GetByte()[0]
+		stringData = string(obj.Get(int(strLen)))
+	case 2:
+		strLen := int(binary.BigEndian.Uint16(obj.GetShortInt()))
+		stringData = string(obj.Get(strLen))
+	case 3:
+		strLen := int(binary.BigEndian.Uint32(obj.GetInt()))
+		stringData = string(obj.Get(strLen))
+	case 4:
+		strLen := int(binary.BigEndian.Uint64(obj.GetLong()))
+		stringData = string(obj.Get(strLen))
+	default:
+		fmt.Println("Invalid string length type...")
+	}
+
+	if stringData == "X" {
 		return ""
 	} else {
 		return stringData
@@ -110,12 +137,27 @@ func (obj *Buffer) GetString() string {
 func (obj *Buffer) PutString(value string) {
 	strLen := len(value)
 	if strLen > 0 {
-		obj.PutInt(strLen)
-		obj.Put([]byte(value))
+		if strLen < 128 {
+			obj.PutByte(1)
+			obj.PutByte(byte(strLen))
+			obj.Put([]byte(value))
+		} else if strLen < 32768 {
+			obj.PutByte(2)
+			obj.PutShort(strLen)
+			obj.Put([]byte(value))
+		} else if strLen < 2147483648 {
+			obj.PutByte(3)
+			obj.PutInt(strLen)
+			obj.Put([]byte(value))
+		} else {
+			obj.PutByte(4)
+			obj.PutLong(strLen)
+			obj.Put([]byte(value))
+		}
 	} else {
-		obj.PutInt(4)
-		dummyData := []byte("XXXX")
-		obj.Put(dummyData)
+		obj.PutByte(1)
+		obj.PutByte(1)
+		obj.Put([]byte("X"))
 	}
 }
 
