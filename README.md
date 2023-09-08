@@ -20,7 +20,7 @@ ByteBuffer Generator
     json decoding:  69.930208ms
     xml decoding:  189.59925ms
 
-    After compression in byte buffer, It's time increases 10ms more than flat buffer but the size is 900KB where as the flat buffer size was 32MB
+    After compression in byte buffer, It's time increases 10ms-18ms more than flat buffer but the size is 900KB where as the flat buffer size was 32MB
     
     Encoding-decoding........................
     bytebuffer length:  943963
