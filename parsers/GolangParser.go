@@ -881,9 +881,12 @@ func EncoderCodeGeneration(rootClassName RootClass, stringDataEncoder *string, p
 		import(
 			"github.com/golang/snappy"
 			"github.com/bytebuffer_parser/parsers"
+			"compress/gzip"
+			"bytes"
+			"log"
 		)
 
-		func ` + strings.ToUpper(*fileName) + `_Encoder(compression bool, obj ` + squareBrackets + rootClassName.Name + `) []byte{
+		func ` + strings.ToUpper(*fileName) + `_Encoder(compress string, obj ` + squareBrackets + rootClassName.Name + `) []byte{
 
 			bb := parsers.Buffer{
 				FloatIntEncoderVal: 10000.0,
@@ -928,15 +931,27 @@ func EncoderCodeGeneration(rootClassName RootClass, stringDataEncoder *string, p
 
 	*stringDataEncoder += `
 
-			var compressedData []byte
+			// Create a buffer to hold the compressed data
+			var compressedData bytes.Buffer
 
-			if compression{
-				compressedData =  snappy.Encode(nil, bb.Array())
-			}else{
-				compressedData = bb.Array()
+			if compress == "gzip" {
+				// Create a gzip writer
+				gzipWriter := gzip.NewWriter(&compressedData)
+				// Close the gzip writer to flush any remaining data
+				gzipWriter.Close()
+
+				// Write the data to the gzip writer
+				_, err := gzipWriter.Write(bb.Array())
+				if err != nil {
+					log.Fatal(err)
+				}
+			} else if compress == "snappy" {
+				compressedData.Write(snappy.Encode(nil, bb.Array()))
+			} else {
+				compressedData.Write(bb.Array())
 			}
 
-			return compressedData
+			return compressedData.Bytes()
 		}
 	`
 }
@@ -970,26 +985,44 @@ func DecoderCodeGeneration(rootClassName RootClass, stringDataDecoder *string, p
 		"log"
 		"github.com/golang/snappy"
 		"github.com/bytebuffer_parser/parsers"
+		"compress/gzip"
+		"bytes"
+		"io"
 	)
 
-	func ` + strings.ToUpper(*fileName) + `_Decoder(compression bool, byteArr []byte) ` + squareBrackets + rootClassName.Name + `{
+	func ` + strings.ToUpper(*fileName) + `_Decoder(compress string, byteArr []byte) ` + squareBrackets + rootClassName.Name + `{
 
 		bb := parsers.Buffer{
 			FloatIntEncoderVal: 10000.0,
 			Endian: "big",
 		}
 
-		if compression{
-			decompressedData, err := snappy.Decode(nil, byteArr)
-
+		var decompressedData []byte
+		var err error 
+		// Create a gzip reader
+		if compress == "gzip" {
+			compressedBuffer := bytes.NewReader(byteArr)
+			gzipReader, err := gzip.NewReader(compressedBuffer)
 			if err != nil {
-				log.Fatal("Failed to decompress data...")
+				log.Fatal(err)
 			}
+			defer gzipReader.Close()
 
-			bb.Wrap(decompressedData)
-		}else{
-			bb.Wrap(byteArr)
+			// Read the decompressed data
+			decompressedData, err = io.ReadAll(gzipReader)
+			if err != nil {
+				log.Fatal(err)
+			}
+		} else if compress == "snappy" {
+			decompressedData, err = snappy.Decode(nil, byteArr)
+			if err != nil {
+				log.Fatal(err)
+			}
+		} else {
+			decompressedData = byteArr
 		}
+
+		bb.Wrap(decompressedData)
 
 		` + rootArrayClass + `
 `
