@@ -175,9 +175,12 @@ namespace ` + *packageName + ` {
 	}
 
 	*stringDataEncoder += `
+
+			let response = bb.ToArray();
+
 			bb.Dispose();
 			
-			return bb.ToArray();
+			return response;
 		}
 	}
 }
