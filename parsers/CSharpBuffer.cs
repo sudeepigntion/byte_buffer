@@ -40,27 +40,29 @@ public class ByteBuffer
 
     public void PutString(string value)
     {
-        int strLen = value.length;
+        long strLen = value.Length;
         if (strLen > 0 ){
             if (strLen < 128) {
-                PutByte(1)
-                PutByte(strLen)
+                PutByte(1);
+                PutByte((byte)strLen);
             } else if (strLen < 32768) {
-                PutByte(2)
-                PutShort(strLen)
+                PutByte(2);
+                PutShort(Convert.ToInt16(strLen));
             } else if (strLen < 2147483648) {
-                PutByte(3)
-                PutInt(strLen)
+                PutByte(3);
+                PutInt(Convert.ToInt32(strLen));
             } else {
-                PutByte(4)
-                PutLong(strLen)
+                PutByte(4);
+                PutLong(strLen);
             }
         } else {
-            PutByte(1)
-            PutByte(1)
+            PutByte(1);
+            PutByte(1);
         }
 
-        byte[] bytes = BitConverter.GetBytes(value);
+
+
+        byte[] bytes = Encoding.UTF8.GetBytes(value);
         Array.Reverse(bytes);
         writer.Write(bytes);
     }
@@ -144,7 +146,7 @@ public class ByteBuffer
     {
         int typeString = (int)GetByte();
         string stringData = "";
-        byte[] readBytes;
+        byte[] readBytes = null;
 
         if(typeString == 1){
             int strLen = (int)GetByte();
@@ -157,7 +159,7 @@ public class ByteBuffer
             readBytes = reader.ReadBytes(strLen);
         }else if(typeString == 4){
             long strLen = GetLong();
-            readBytes = reader.ReadBytes(strLen);
+            readBytes = reader.ReadBytes(Convert.ToInt32(strLen));
         }else{
             Console.WriteLine("Invalid string length type...");
         }
@@ -165,7 +167,7 @@ public class ByteBuffer
         Array.Reverse(readBytes); // Reverse the byte order
         stringData = Encoding.UTF8.GetString(readBytes);
        
-        return readValue;
+        return stringData;
     }
 
     public byte GetByte()
@@ -189,7 +191,7 @@ public class ByteBuffer
         return (double)(readValue / 10000);
     }
 
-    public void Wrap([]byte data){
+    public void Wrap(byte[] data){
         stream = new MemoryStream(data);
         writer = new BinaryWriter(stream);
         reader = new BinaryReader(stream);
