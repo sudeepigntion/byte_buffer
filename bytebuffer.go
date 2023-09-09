@@ -66,6 +66,33 @@ func main() {
 		parsers.DecoderCodeGeneration(rootClassName, &stringDataDecoder, packageName, fileName, treeNode)
 		parsers.WriteDecoderData(decoderFileName, stringDataDecoder)
 		break
+	case "csharp":
+		stringDataEncoder := ""
+		stringDataDecoder := ""
+
+		finalStruct = `namespace ` + *packageName + `{`
+		modelFileName = *fileName + ".cs"
+		encoderFileName = *fileName + "_encoder.cs"
+		decoderFileName = *fileName + "_decoder.cs"
+
+		// generate struct out of it
+		totalContent, rootClassName = parsers.GenerateCSharpClass(contentAsString, rootClassName, &globalMap)
+
+		// writing to final content variable
+		finalStruct += "\n" + totalContent + "\n}"
+
+		// Create the root node
+		treeNode := &parsers.TreeNode{Value: rootClassName.Name}
+		createTreeNode(treeNode, globalMap, rootClassName.Name)
+
+		parsers.WriteCSharpClassData(modelFileName, finalStruct)
+
+		parsers.EncoderCSharpCodeGeneration(rootClassName, &stringDataEncoder, packageName, fileName, treeNode)
+		parsers.WriteCsharpEncoderData(encoderFileName, stringDataEncoder)
+
+		parsers.DecoderCSharpCodeGeneration(rootClassName, &stringDataDecoder, packageName, fileName, treeNode)
+		parsers.WriteCsharpDecoderData(decoderFileName, stringDataDecoder)
+
 	default:
 		log.Fatal("Invalid language...")
 	}

@@ -1,14 +1,19 @@
+class StudentClass{
+    string Name
+}
+
 class Employees{
     string Name
     float Salary
+    []StudentClass Student
 }
 
 class Person {
     long Epoch
-    string Watch
-    short Xyz
+    [][]int Watch
+    int Xyz
     float Salary
-    []Employees Employee
+    [][][][]Employees Employee
 }
 
-export = []Person
+export = [][]Person

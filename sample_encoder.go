@@ -1,33 +1,92 @@
-package main
+package byteSample
 
 import (
 	"github.com/bytebuffer_parser/parsers"
+	"github.com/golang/snappy"
 )
 
-func SAMPLE_Encoder(obj Person) []byte {
+func SAMPLE_Encoder(compression bool, obj [][]Person) []byte {
 
 	bb := parsers.Buffer{
 		FloatIntEncoderVal: 10000.0,
 		Endian:             "big",
 	}
 
-	bb.PutLong(obj.Epoch)
+	bb.PutShort(len(obj))
 
-	bb.PutString(obj.Watch)
+	for i0 := 0; i0 < len(obj); i0++ {
 
-	bb.PutShort(obj.Xyz)
+		bb.PutShort(len(obj[i0]))
 
-	bb.PutFloatUsingIntEncoding(obj.Salary)
+		for i1 := 0; i1 < len(obj[i0]); i1++ {
 
-	bb.PutShort(len(obj.Employee))
+			bb.PutLong(obj[i0][i1].Epoch)
 
-	for index00 := range obj.Employee {
+			bb.PutShort(len(obj[i0][i1].Watch))
 
-		bb.PutString(obj.Employee[index00].Name)
+			for index00 := range obj[i0][i1].Watch {
 
-		bb.PutFloatUsingIntEncoding(obj.Employee[index00].Salary)
+				bb.PutShort(len(obj[i0][i1].Watch[index00]))
+
+				for index01 := range obj[i0][i1].Watch[index00] {
+
+					bb.PutInt(obj[i0][i1].Watch[index00][index01])
+
+				}
+
+			}
+
+			bb.PutInt(obj[i0][i1].Xyz)
+
+			bb.PutFloatUsingIntEncoding(obj[i0][i1].Salary)
+
+			bb.PutShort(len(obj[i0][i1].Employee))
+
+			for index00 := range obj[i0][i1].Employee {
+
+				bb.PutShort(len(obj[i0][i1].Employee[index00]))
+
+				for index11 := range obj[i0][i1].Employee[index00] {
+
+					bb.PutShort(len(obj[i0][i1].Employee[index00][index11]))
+
+					for index22 := range obj[i0][i1].Employee[index00][index11] {
+
+						bb.PutShort(len(obj[i0][i1].Employee[index00][index11][index22]))
+
+						for index33 := range obj[i0][i1].Employee[index00][index11][index22] {
+
+							bb.PutString(obj[i0][i1].Employee[index00][index11][index22][index33].Name)
+
+							bb.PutFloatUsingIntEncoding(obj[i0][i1].Employee[index00][index11][index22][index33].Salary)
+
+							bb.PutShort(len(obj[i0][i1].Employee[index00][index11][index22][index33].Student))
+
+							for index40 := range obj[i0][i1].Employee[index00][index11][index22][index33].Student {
+
+								bb.PutString(obj[i0][i1].Employee[index00][index11][index22][index33].Student[index40].Name)
+
+							}
+
+						}
+
+					}
+
+				}
+
+			}
+
+		}
 
 	}
 
-	return bb.Array()
+	var compressedData []byte
+
+	if compression {
+		compressedData = snappy.Encode(nil, bb.Array())
+	} else {
+		compressedData = bb.Array()
+	}
+
+	return compressedData
 }

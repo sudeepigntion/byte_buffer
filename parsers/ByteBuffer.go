@@ -140,20 +140,18 @@ func (obj *Buffer) PutString(value string) {
 		if strLen < 128 {
 			obj.PutByte(1)
 			obj.PutByte(byte(strLen))
-			obj.Put([]byte(value))
 		} else if strLen < 32768 {
 			obj.PutByte(2)
 			obj.PutShort(strLen)
-			obj.Put([]byte(value))
 		} else if strLen < 2147483648 {
 			obj.PutByte(3)
 			obj.PutInt(strLen)
-			obj.Put([]byte(value))
 		} else {
 			obj.PutByte(4)
 			obj.PutLong(strLen)
-			obj.Put([]byte(value))
 		}
+
+		obj.Put([]byte(value))
 	} else {
 		obj.PutByte(1)
 		obj.PutByte(1)

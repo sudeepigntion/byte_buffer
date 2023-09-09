@@ -10,45 +10,6 @@ import (
 	"strings"
 )
 
-type TreeNode struct {
-	ArrayCount int
-	Name       string
-	Value      string
-	Children   []*TreeNode
-}
-
-type RootClass struct {
-	Name       string
-	ArrayCount int
-}
-
-// StructField represents a struct field with name and type.
-type StructField struct {
-	Name string
-	Type string
-}
-
-func CountSquareBrackets(input string) (bool, int) {
-	// Split the input into characters
-	characters := strings.Split(input, "")
-
-	// Initialize counters for open and close square brackets
-	openCount := 0
-	closeCount := 0
-
-	// Iterate through the characters and count square brackets
-	for _, char := range characters {
-		if char == "[" {
-			openCount++
-		} else if char == "]" {
-			closeCount++
-		}
-	}
-
-	// Return the minimum count (as open and close brackets must match)
-	return (openCount == closeCount), openCount
-}
-
 func GenerateGolangStruct(classDefinitions string, rootClassName RootClass, globalMap *map[string][]string) (string, RootClass) {
 
 	tempMap := *globalMap
@@ -993,7 +954,10 @@ func DecoderCodeGeneration(rootClassName RootClass, stringDataDecoder *string, p
 	rootArrayClass := ""
 
 	if squareBrackets != "" {
-		rootArrayClass = "obj := make(" + squareBrackets + rootClassName.Name + ", " + strconv.Itoa(rootClassName.ArrayCount) + ")"
+		rootArrayClass = `
+			arrLen := bb.GetShort()
+		`
+		rootArrayClass += "obj := make(" + squareBrackets + rootClassName.Name + ", arrLen)"
 	} else {
 		rootArrayClass = "obj := " + rootClassName.Name + "{}"
 	}
@@ -1034,7 +998,7 @@ func DecoderCodeGeneration(rootClassName RootClass, stringDataDecoder *string, p
 		for i := 0; i < rootClassName.ArrayCount; i++ {
 			if i == 0 {
 				*stringDataDecoder += `
-		for i` + strconv.Itoa(i) + `:=0;i` + strconv.Itoa(i) + `<len(obj);i` + strconv.Itoa(i) + `++{
+		for i` + strconv.Itoa(i) + `:=0;i` + strconv.Itoa(i) + `<arrLen;i` + strconv.Itoa(i) + `++{
 `
 			} else {
 
@@ -1047,10 +1011,13 @@ func DecoderCodeGeneration(rootClassName RootClass, stringDataDecoder *string, p
 				innerbracesCount -= 1
 
 				*stringDataDecoder += `
-				obj` + totalParentBraces + ` = make(` + nestedSquareBrackets + rootClassName.Name + `, len(obj` + totalParentBraces + `))
+
+				arrLen` + strconv.Itoa(i) + ` := bb.GetShort()
+
+				obj` + totalParentBraces + ` = make(` + nestedSquareBrackets + rootClassName.Name + `, arrLen` + strconv.Itoa(i) + `)
 `
 				*stringDataDecoder += `
-		for i` + strconv.Itoa(i) + `:=0;i` + strconv.Itoa(i) + `<len(obj` + totalParentBraces + `);i` + strconv.Itoa(i) + `++{
+		for i` + strconv.Itoa(i) + `:=0;i` + strconv.Itoa(i) + `<arrLen` + strconv.Itoa(i) + `;i` + strconv.Itoa(i) + `++{
 `
 			}
 
