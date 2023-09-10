@@ -1,4 +1,4 @@
-# byte_buffer
+# Byte Buffer Generator
 ByteBuffer Generator
 
     go run bytebuffer.go -fileName=ByteBufferClass -package=packageName -language=golang
