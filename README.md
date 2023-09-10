@@ -20,7 +20,7 @@ ByteBuffer Generator
     json decoding:  69.930208ms
     xml decoding:  189.59925ms
 
-    After snappy compression in byte buffer, It's time increases 10ms-18ms more than flat buffer but the size is 900KB where as the flat buffer size was 32MB
+    After snappy compression in byte buffer, Its time increases 10ms-18ms more than flat buffer but the size is 900KB whereas the flat buffer size was 32MB
     
     Encoding-decoding........................
     bytebuffer length:  943963
@@ -32,7 +32,8 @@ ByteBuffer Generator
     xml length:  66000102
     xml encoding-decoding:  2.366141583s
 
-    After gzip compression in byte buffer, It's time is almost equals to flat buffer but the size decreased to 480KB but the flat buffer size without compression is 320MB
+    After gzip compression in byte buffer, It's time is almost equal to flat buffer but the size decreased to 480KB the flat buffer size without compression is 320MB
+    
     Encoding-decoding........................
     bytebuffer length:  485225
     bytebuffer encoding-decoding:  1.505644792s
