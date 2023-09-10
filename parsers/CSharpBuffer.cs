@@ -166,6 +166,10 @@ public class ByteBuffer
 
         Array.Reverse(readBytes); // Reverse the byte order
         stringData = Encoding.UTF8.GetString(readBytes);
+
+        if(stringData == "X"){
+            return "";
+        }
        
         return stringData;
     }

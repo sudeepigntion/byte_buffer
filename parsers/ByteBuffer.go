@@ -56,7 +56,7 @@ func (obj *Buffer) GetInteger() int {
 
 	obj.Offset += 4
 
-	return int(binary.BigEndian.Uint32(intValue))
+	return int(int32(binary.BigEndian.Uint32(intValue)))
 }
 
 func (obj *Buffer) GetLongInteger() int {
@@ -65,7 +65,7 @@ func (obj *Buffer) GetLongInteger() int {
 
 	obj.Offset += 8
 
-	return int(binary.BigEndian.Uint64(longValue))
+	return int(int64(binary.BigEndian.Uint64(longValue)))
 }
 
 func (obj *Buffer) GetShort() int {
@@ -74,7 +74,7 @@ func (obj *Buffer) GetShort() int {
 
 	obj.Offset += 2
 
-	return int(binary.BigEndian.Uint16(shortValue))
+	return int(int16(binary.BigEndian.Uint16(shortValue)))
 }
 
 func (obj *Buffer) GetLong() []byte {

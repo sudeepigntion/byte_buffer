@@ -143,7 +143,7 @@ namespace ` + *packageName + ` {
 
 	class Encoder{
 
-		public byte[] ` + strings.ToUpper(*fileName) + `_Encoder(` + squareBrackets + rootClassName.Name + ` obj){
+		public byte[] ` + *fileName + `_Encoder(` + squareBrackets + rootClassName.Name + ` obj){
 
 			ByteBuffer bb = new ByteBuffer();
 `
@@ -521,7 +521,7 @@ namespace ` + *packageName + ` {
 
 	class Decoder{
 
-		public ` + squareBrackets + rootClassName.Name + ` ` + strings.ToUpper(*fileName) + `_Decoder(byte[] byteArr){
+		public ` + squareBrackets + rootClassName.Name + ` ` + *fileName + `_Decoder(byte[] byteArr){
 
 			ByteBuffer bb = new ByteBuffer();
 

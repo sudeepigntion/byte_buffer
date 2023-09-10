@@ -66,6 +66,34 @@ func main() {
 		parsers.DecoderCodeGeneration(rootClassName, &stringDataDecoder, packageName, fileName, treeNode)
 		parsers.WriteDecoderData(decoderFileName, stringDataDecoder)
 		break
+	case "rust":
+		stringDataEncoder := ""
+		stringDataDecoder := ""
+
+		finalStruct = "use serde::{Serialize, Deserialize}; \n\n"
+		finalStruct += `pub mod ` + *packageName + ` {`
+		modelFileName = *fileName + ".rs"
+		encoderFileName = *fileName + "_encoder.rs"
+		decoderFileName = *fileName + "_decoder.rs"
+
+		// generate struct out of it
+		totalContent, rootClassName = parsers.GenerateRustStruct(contentAsString, rootClassName, &globalMap)
+
+		// writing to final content variable
+		finalStruct += "\n" + totalContent + "\n}"
+
+		// Create the root node
+		treeNode := &parsers.TreeNode{Value: rootClassName.Name}
+		createTreeNode(treeNode, globalMap, rootClassName.Name)
+
+		parsers.WriteRustStructData(modelFileName, finalStruct)
+
+		parsers.RustEncoderCodeGeneration(rootClassName, &stringDataEncoder, packageName, fileName, treeNode)
+		parsers.WriteRustEncoderData(encoderFileName, stringDataEncoder)
+
+		parsers.RustDecoderCodeGeneration(rootClassName, &stringDataDecoder, packageName, fileName, treeNode)
+		parsers.WriteRustDecoderData(decoderFileName, stringDataDecoder)
+
 	case "csharp":
 		stringDataEncoder := ""
 		stringDataDecoder := ""
