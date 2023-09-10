@@ -34,7 +34,7 @@ ByteBuffer Generator
 
     
     It is 2-3 times faster than protobuff and flatbuffer. Depending on the structure of the class
-    Currently supporting only Golang, upcoming language support: C#, Java, Javascript and Rust
+    Currently supporting only Golang and C# upcoming language support: Java, Javascript, NodeJS and Rust
     For sample example check the file generated using sample.bb (sample.go, sample_encoder.go and sample_decoder.go)
 
     To run the generator
