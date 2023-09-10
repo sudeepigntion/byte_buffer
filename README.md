@@ -20,7 +20,7 @@ ByteBuffer Generator
     json decoding:  69.930208ms
     xml decoding:  189.59925ms
 
-    After compression in byte buffer, It's time increases 10ms-18ms more than flat buffer but the size is 900KB where as the flat buffer size was 32MB
+    After snappy compression in byte buffer, It's time increases 10ms-18ms more than flat buffer but the size is 900KB where as the flat buffer size was 32MB
     
     Encoding-decoding........................
     bytebuffer length:  943963
@@ -31,6 +31,17 @@ ByteBuffer Generator
     json encoding-decoding:  884.017167ms
     xml length:  66000102
     xml encoding-decoding:  2.366141583s
+
+    After gzip compression in byte buffer, It's time is almost equals to flat buffer but the size decreased to 480KB but the flat buffer size without compression is 320MB
+    Encoding-decoding........................
+    bytebuffer length:  485225
+    bytebuffer encoding-decoding:  1.505644792s
+    flatbuffer length:  320000080
+    flatbuffer encoding-decoding:  1.317980541s
+    json length:  710000112
+    json encoding-decoding:  15.4076795s
+    xml length:  660000102
+    xml encoding-decoding:  37.202624375s
 
     
     It is 2-3 times faster than protobuff and flatbuffer. Depending on the structure of the class
