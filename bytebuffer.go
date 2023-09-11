@@ -48,8 +48,10 @@ func main() {
 		encoderFileName = *fileName + "_encoder.go"
 		decoderFileName = *fileName + "_decoder.go"
 
+		p := parsers.GolangParser{}
+
 		// generate struct out of it
-		totalContent, rootClassName = parsers.GenerateGolangStruct(contentAsString, rootClassName, &globalMap)
+		totalContent, rootClassName = p.GenerateStruct(contentAsString, rootClassName, &globalMap)
 
 		// writing to final content variable
 		finalStruct += "\n" + totalContent
@@ -58,13 +60,13 @@ func main() {
 		treeNode := &parsers.TreeNode{Value: rootClassName.Name}
 		createTreeNode(treeNode, globalMap, rootClassName.Name)
 
-		parsers.WriteStructData(modelFileName, finalStruct)
+		p.WriteStructData(modelFileName, finalStruct)
 
-		parsers.EncoderCodeGeneration(rootClassName, &stringDataEncoder, packageName, fileName, treeNode)
-		parsers.WriteEncoderData(encoderFileName, stringDataEncoder)
+		p.EncoderCodeGeneration(rootClassName, &stringDataEncoder, packageName, fileName, treeNode)
+		p.WriteEncoderData(encoderFileName, stringDataEncoder)
 
-		parsers.DecoderCodeGeneration(rootClassName, &stringDataDecoder, packageName, fileName, treeNode)
-		parsers.WriteDecoderData(decoderFileName, stringDataDecoder)
+		p.DecoderCodeGeneration(rootClassName, &stringDataDecoder, packageName, fileName, treeNode)
+		p.WriteDecoderData(decoderFileName, stringDataDecoder)
 		break
 	case "rust":
 		stringDataEncoder := ""
@@ -76,8 +78,10 @@ func main() {
 		encoderFileName = *fileName + "_encoder.rs"
 		decoderFileName = *fileName + "_decoder.rs"
 
+		p := parsers.RustParser{}
+
 		// generate struct out of it
-		totalContent, rootClassName = parsers.GenerateRustStruct(contentAsString, rootClassName, &globalMap)
+		totalContent, rootClassName = p.GenerateStruct(contentAsString, rootClassName, &globalMap)
 
 		// writing to final content variable
 		finalStruct += "\n" + totalContent + "\n}"
@@ -86,13 +90,13 @@ func main() {
 		treeNode := &parsers.TreeNode{Value: rootClassName.Name}
 		createTreeNode(treeNode, globalMap, rootClassName.Name)
 
-		parsers.WriteRustStructData(modelFileName, finalStruct)
+		p.WriteStructData(modelFileName, finalStruct)
 
-		parsers.RustEncoderCodeGeneration(rootClassName, &stringDataEncoder, packageName, fileName, treeNode)
-		parsers.WriteRustEncoderData(encoderFileName, stringDataEncoder)
+		p.EncoderCodeGeneration(rootClassName, &stringDataEncoder, packageName, fileName, treeNode)
+		p.WriteEncoderData(encoderFileName, stringDataEncoder)
 
-		parsers.RustDecoderCodeGeneration(rootClassName, &stringDataDecoder, packageName, fileName, treeNode)
-		parsers.WriteRustDecoderData(decoderFileName, stringDataDecoder)
+		p.DecoderCodeGeneration(rootClassName, &stringDataDecoder, packageName, fileName, treeNode)
+		p.WriteDecoderData(decoderFileName, stringDataDecoder)
 
 	case "csharp":
 		stringDataEncoder := ""
@@ -103,8 +107,10 @@ func main() {
 		encoderFileName = *fileName + "_encoder.cs"
 		decoderFileName = *fileName + "_decoder.cs"
 
+		p := parsers.CSharpParser{}
+
 		// generate struct out of it
-		totalContent, rootClassName = parsers.GenerateCSharpClass(contentAsString, rootClassName, &globalMap)
+		totalContent, rootClassName = p.GenerateStruct(contentAsString, rootClassName, &globalMap)
 
 		// writing to final content variable
 		finalStruct += "\n" + totalContent + "\n}"
@@ -113,13 +119,13 @@ func main() {
 		treeNode := &parsers.TreeNode{Value: rootClassName.Name}
 		createTreeNode(treeNode, globalMap, rootClassName.Name)
 
-		parsers.WriteCSharpClassData(modelFileName, finalStruct)
+		p.WriteStructData(modelFileName, finalStruct)
 
-		parsers.EncoderCSharpCodeGeneration(rootClassName, &stringDataEncoder, packageName, fileName, treeNode)
-		parsers.WriteCsharpEncoderData(encoderFileName, stringDataEncoder)
+		p.EncoderCodeGeneration(rootClassName, &stringDataEncoder, packageName, fileName, treeNode)
+		p.WriteEncoderData(encoderFileName, stringDataEncoder)
 
-		parsers.DecoderCSharpCodeGeneration(rootClassName, &stringDataDecoder, packageName, fileName, treeNode)
-		parsers.WriteCsharpDecoderData(decoderFileName, stringDataDecoder)
+		p.DecoderCodeGeneration(rootClassName, &stringDataDecoder, packageName, fileName, treeNode)
+		p.WriteDecoderData(decoderFileName, stringDataDecoder)
 
 	default:
 		log.Fatal("Invalid language...")

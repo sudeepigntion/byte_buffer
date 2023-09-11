@@ -10,7 +10,10 @@ import (
 	"strings"
 )
 
-func GenerateGolangStruct(classDefinitions string, rootClassName RootClass, globalMap *map[string][]string) (string, RootClass) {
+type GolangParser struct {
+}
+
+func (p *GolangParser) GenerateStruct(classDefinitions string, rootClassName RootClass, globalMap *map[string][]string) (string, RootClass) {
 
 	tempMap := *globalMap
 
@@ -94,7 +97,7 @@ func GenerateGolangStruct(classDefinitions string, rootClassName RootClass, glob
 	return goCode, rootClassName
 }
 
-func GenerateGolangEncodeCode(currentIterate *int, stringData *string, node *TreeNode, parentName string) {
+func (p *GolangParser) GenerateEncodeCode(currentIterate *int, stringData *string, node *TreeNode, parentName string) {
 
 	for _, child := range node.Children {
 
@@ -370,7 +373,7 @@ func GenerateGolangEncodeCode(currentIterate *int, stringData *string, node *Tre
 				}
 			}
 
-			GenerateGolangEncodeCode(currentIterate, stringData, child, path+".")
+			p.GenerateEncodeCode(currentIterate, stringData, child, path+".")
 		}
 	}
 
@@ -384,7 +387,7 @@ func GenerateGolangEncodeCode(currentIterate *int, stringData *string, node *Tre
 	}
 }
 
-func GenerateGolangDecoderCode(currentIterate *int, stringData *string, node *TreeNode, parentName string) {
+func (p *GolangParser) GenerateDecoderCode(currentIterate *int, stringData *string, node *TreeNode, parentName string) {
 
 	for _, child := range node.Children {
 
@@ -788,7 +791,7 @@ func GenerateGolangDecoderCode(currentIterate *int, stringData *string, node *Tr
 				}
 			}
 
-			GenerateGolangDecoderCode(currentIterate, stringData, child, path+".")
+			p.GenerateDecoderCode(currentIterate, stringData, child, path+".")
 		}
 	}
 
@@ -802,7 +805,7 @@ func GenerateGolangDecoderCode(currentIterate *int, stringData *string, node *Tr
 	}
 }
 
-func WriteEncoderData(encoderFileName string, stringDataEncoder string) {
+func (p *GolangParser) WriteEncoderData(encoderFileName string, stringDataEncoder string) {
 
 	code, err := format.Source([]byte(stringDataEncoder))
 	if err != nil {
@@ -823,7 +826,7 @@ func WriteEncoderData(encoderFileName string, stringDataEncoder string) {
 	}
 }
 
-func WriteDecoderData(decoderFileName string, stringDataDecoder string) {
+func (p *GolangParser) WriteDecoderData(decoderFileName string, stringDataDecoder string) {
 
 	code, err := format.Source([]byte(stringDataDecoder))
 	if err != nil {
@@ -844,7 +847,7 @@ func WriteDecoderData(decoderFileName string, stringDataDecoder string) {
 	}
 }
 
-func WriteStructData(modelFileName string, finalStruct string) {
+func (p *GolangParser) WriteStructData(modelFileName string, finalStruct string) {
 
 	code, err := format.Source([]byte(finalStruct))
 	if err != nil {
@@ -864,7 +867,7 @@ func WriteStructData(modelFileName string, finalStruct string) {
 	}
 }
 
-func EncoderCodeGeneration(rootClassName RootClass, stringDataEncoder *string, packageName *string, fileName *string, treeNode *TreeNode) {
+func (p *GolangParser) EncoderCodeGeneration(rootClassName RootClass, stringDataEncoder *string, packageName *string, fileName *string, treeNode *TreeNode) {
 
 	currentIterate := 0
 
@@ -919,7 +922,7 @@ func EncoderCodeGeneration(rootClassName RootClass, stringDataEncoder *string, p
 
 	totalParentBraces = "obj" + totalParentBraces + "."
 
-	GenerateGolangEncodeCode(&currentIterate, stringDataEncoder, treeNode, totalParentBraces)
+	p.GenerateEncodeCode(&currentIterate, stringDataEncoder, treeNode, totalParentBraces)
 
 	if squareBrackets != "" {
 		for i := 0; i < rootClassName.ArrayCount; i++ {
@@ -956,7 +959,7 @@ func EncoderCodeGeneration(rootClassName RootClass, stringDataEncoder *string, p
 	`
 }
 
-func DecoderCodeGeneration(rootClassName RootClass, stringDataDecoder *string, packageName *string, fileName *string, treeNode *TreeNode) {
+func (p *GolangParser) DecoderCodeGeneration(rootClassName RootClass, stringDataDecoder *string, packageName *string, fileName *string, treeNode *TreeNode) {
 	squareBrackets := ""
 
 	for i := 0; i < rootClassName.ArrayCount; i++ {
@@ -1061,7 +1064,7 @@ func DecoderCodeGeneration(rootClassName RootClass, stringDataDecoder *string, p
 
 	totalParentBraces = "obj" + totalParentBraces + "."
 
-	GenerateGolangDecoderCode(&currentIterate, stringDataDecoder, treeNode, totalParentBraces)
+	p.GenerateDecoderCode(&currentIterate, stringDataDecoder, treeNode, totalParentBraces)
 
 	if squareBrackets != "" {
 		for i := 0; i < rootClassName.ArrayCount; i++ {

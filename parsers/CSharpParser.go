@@ -9,6 +9,8 @@ import (
 	"strings"
 )
 
+type CSharpParser struct{}
+
 func generateCSharpClass(className string, properties []string) {
 	fmt.Printf("public class %s {\n", className)
 	for _, prop := range properties {
@@ -17,7 +19,7 @@ func generateCSharpClass(className string, properties []string) {
 	fmt.Println("}")
 }
 
-func GenerateCSharpClass(classDefinitions string, rootClassName RootClass, globalMap *map[string][]string) (string, RootClass) {
+func (p *CSharpParser) GenerateStruct(classDefinitions string, rootClassName RootClass, globalMap *map[string][]string) (string, RootClass) {
 
 	tempMap := *globalMap
 
@@ -108,7 +110,7 @@ func GenerateCSharpClass(classDefinitions string, rootClassName RootClass, globa
 	return goCode, rootClassName
 }
 
-func WriteCSharpClassData(modelFileName string, finalStruct string) {
+func (p *CSharpParser) WriteStructData(modelFileName string, finalStruct string) {
 
 	// creating model file for example it will contain struct or class file
 	file, err := os.Create(modelFileName)
@@ -123,7 +125,7 @@ func WriteCSharpClassData(modelFileName string, finalStruct string) {
 	}
 }
 
-func EncoderCSharpCodeGeneration(rootClassName RootClass, stringDataEncoder *string, packageName *string, fileName *string, treeNode *TreeNode) {
+func (p *CSharpParser) EncoderCodeGeneration(rootClassName RootClass, stringDataEncoder *string, packageName *string, fileName *string, treeNode *TreeNode) {
 
 	currentIterate := 0
 
@@ -171,7 +173,7 @@ namespace ` + *packageName + ` {
 
 	totalParentBraces = "obj" + totalParentBraces + "."
 
-	GenerateCSharpEncodeCode(&currentIterate, stringDataEncoder, treeNode, totalParentBraces)
+	p.GenerateEncodeCode(&currentIterate, stringDataEncoder, treeNode, totalParentBraces)
 
 	if squareBrackets != "" {
 		for i := 0; i < rootClassName.ArrayCount; i++ {
@@ -194,7 +196,7 @@ namespace ` + *packageName + ` {
 	`
 }
 
-func GenerateCSharpEncodeCode(currentIterate *int, stringData *string, node *TreeNode, parentName string) {
+func (p *CSharpParser) GenerateEncodeCode(currentIterate *int, stringData *string, node *TreeNode, parentName string) {
 
 	for _, child := range node.Children {
 
@@ -470,7 +472,7 @@ func GenerateCSharpEncodeCode(currentIterate *int, stringData *string, node *Tre
 				}
 			}
 
-			GenerateCSharpEncodeCode(currentIterate, stringData, child, path+".")
+			p.GenerateEncodeCode(currentIterate, stringData, child, path+".")
 		}
 	}
 
@@ -484,7 +486,7 @@ func GenerateCSharpEncodeCode(currentIterate *int, stringData *string, node *Tre
 	}
 }
 
-func DecoderCSharpCodeGeneration(rootClassName RootClass, stringDataDecoder *string, packageName *string, fileName *string, treeNode *TreeNode) {
+func (p *CSharpParser) DecoderCodeGeneration(rootClassName RootClass, stringDataDecoder *string, packageName *string, fileName *string, treeNode *TreeNode) {
 	squareBrackets := ""
 	firstSquareBrackets := ""
 
@@ -566,7 +568,7 @@ namespace ` + *packageName + ` {
 
 	totalParentBraces = "obj" + totalParentBraces + "."
 
-	GenerateCSharpDecoderCode(&currentIterate, stringDataDecoder, treeNode, totalParentBraces)
+	p.GenerateDecoderCode(&currentIterate, stringDataDecoder, treeNode, totalParentBraces)
 
 	if squareBrackets != "" {
 		for i := 0; i < rootClassName.ArrayCount; i++ {
@@ -587,7 +589,7 @@ namespace ` + *packageName + ` {
 `
 }
 
-func GenerateCSharpDecoderCode(currentIterate *int, stringData *string, node *TreeNode, parentName string) {
+func (p *CSharpParser) GenerateDecoderCode(currentIterate *int, stringData *string, node *TreeNode, parentName string) {
 
 	for _, child := range node.Children {
 
@@ -1080,7 +1082,7 @@ func GenerateCSharpDecoderCode(currentIterate *int, stringData *string, node *Tr
 				}
 			}
 
-			GenerateCSharpDecoderCode(currentIterate, stringData, child, path+".")
+			p.GenerateDecoderCode(currentIterate, stringData, child, path+".")
 		}
 	}
 
@@ -1094,7 +1096,7 @@ func GenerateCSharpDecoderCode(currentIterate *int, stringData *string, node *Tr
 	}
 }
 
-func WriteCsharpDecoderData(decoderFileName string, stringDataDecoder string) {
+func (p *CSharpParser) WriteDecoderData(decoderFileName string, stringDataDecoder string) {
 
 	// creating encoder file
 	// Create the file (or truncate it if it already exists)
@@ -1110,7 +1112,7 @@ func WriteCsharpDecoderData(decoderFileName string, stringDataDecoder string) {
 	}
 }
 
-func WriteCsharpEncoderData(encoderFileName string, stringDataEncoder string) {
+func (p *CSharpParser) WriteEncoderData(encoderFileName string, stringDataEncoder string) {
 	// creating encoder file
 	// Create the file (or truncate it if it already exists)
 	file, err := os.Create(encoderFileName)

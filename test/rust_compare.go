@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"time"
 
 	"github.com/bytebuffer_parser/parsers"
 	"github.com/golang/snappy"
@@ -257,14 +258,20 @@ func main() {
 		Employee: []Employees{employee1},
 	}
 
+	for i := 0; i < 10000; i++ {
+		person1.Employee = append(person1.Employee, employee1)
+	}
+
 	person2 := []Person{person1}
 	person3 := [][]Person{person2}
 	person4 := [][][]Person{person3}
 
+	start := time.Now()
 	data := SAMPLE_Encoders("", person4)
-	fmt.Println(data)
+	// fmt.Println(data)
 	fmt.Println(len(data))
 
-	per := SAMPLE_Decoder1("", data)
-	fmt.Println(per)
+	SAMPLE_Decoder1("", data)
+	fmt.Println("bytebuffer encoding-decoding: ", time.Since(start))
+	// fmt.Println(per)
 }

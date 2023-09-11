@@ -9,7 +9,10 @@ import (
 	"strings"
 )
 
-func GenerateRustStruct(classDefinitions string, rootClassName RootClass, globalMap *map[string][]string) (string, RootClass) {
+type RustParser struct {
+}
+
+func (p *RustParser) GenerateStruct(classDefinitions string, rootClassName RootClass, globalMap *map[string][]string) (string, RootClass) {
 
 	tempMap := *globalMap
 
@@ -115,7 +118,7 @@ func GenerateRustStruct(classDefinitions string, rootClassName RootClass, global
 	return goCode, rootClassName
 }
 
-func GenerateRustEncodeCode(currentIterate *int, stringData *string, node *TreeNode, parentName string) {
+func (p *RustParser) GenerateEncodeCode(currentIterate *int, stringData *string, node *TreeNode, parentName string) {
 
 	for _, child := range node.Children {
 
@@ -392,7 +395,7 @@ func GenerateRustEncodeCode(currentIterate *int, stringData *string, node *TreeN
 				}
 			}
 
-			GenerateRustEncodeCode(currentIterate, stringData, child, path+".")
+			p.GenerateEncodeCode(currentIterate, stringData, child, path+".")
 		}
 	}
 
@@ -406,7 +409,7 @@ func GenerateRustEncodeCode(currentIterate *int, stringData *string, node *TreeN
 	}
 }
 
-func GenerateRustDecoderCode(importPackage *string, currentIterate *int, stringData *string, node *TreeNode, parentName string) {
+func (p *RustParser) GenerateDecoderCode(importPackage *string, currentIterate *int, stringData *string, node *TreeNode, parentName string) {
 	for _, child := range node.Children {
 
 		path := parentName + child.Name
@@ -919,7 +922,7 @@ func GenerateRustDecoderCode(importPackage *string, currentIterate *int, stringD
 				}
 			}
 
-			GenerateRustDecoderCode(importPackage, currentIterate, stringData, child, path+".")
+			p.GenerateDecoderCode(importPackage, currentIterate, stringData, child, path+".")
 		}
 	}
 
@@ -933,7 +936,7 @@ func GenerateRustDecoderCode(importPackage *string, currentIterate *int, stringD
 	}
 }
 
-func WriteRustEncoderData(encoderFileName string, stringDataEncoder string) {
+func (p *RustParser) WriteEncoderData(encoderFileName string, stringDataEncoder string) {
 	// creating encoder file
 	// Create the file (or truncate it if it already exists)
 	file, err := os.Create(encoderFileName)
@@ -950,7 +953,7 @@ func WriteRustEncoderData(encoderFileName string, stringDataEncoder string) {
 	fmt.Println("Execute 'rustfmt " + encoderFileName + "' to format the code...")
 }
 
-func WriteRustDecoderData(decoderFileName string, stringDataDecoder string) {
+func (p *RustParser) WriteDecoderData(decoderFileName string, stringDataDecoder string) {
 	// creating encoder file
 	// Create the file (or truncate it if it already exists)
 	file, err := os.Create(decoderFileName)
@@ -967,7 +970,7 @@ func WriteRustDecoderData(decoderFileName string, stringDataDecoder string) {
 	fmt.Println("Execute 'rustfmt " + decoderFileName + "' to format the code...")
 }
 
-func WriteRustStructData(modelFileName string, finalStruct string) {
+func (p *RustParser) WriteStructData(modelFileName string, finalStruct string) {
 
 	// creating model file for example it will contain struct or class file
 	file, err := os.Create(modelFileName)
@@ -984,7 +987,7 @@ func WriteRustStructData(modelFileName string, finalStruct string) {
 	fmt.Println("Execute 'rustfmt " + modelFileName + "' to format the code...")
 }
 
-func RustEncoderCodeGeneration(rootClassName RootClass, stringDataEncoder *string, packageName *string, fileName *string, treeNode *TreeNode) {
+func (p *RustParser) EncoderCodeGeneration(rootClassName RootClass, stringDataEncoder *string, packageName *string, fileName *string, treeNode *TreeNode) {
 
 	currentIterate := 0
 
@@ -1045,7 +1048,7 @@ func RustEncoderCodeGeneration(rootClassName RootClass, stringDataEncoder *strin
 
 	newStringEncode := ""
 
-	GenerateRustEncodeCode(&currentIterate, &newStringEncode, treeNode, totalParentBraces)
+	p.GenerateEncodeCode(&currentIterate, &newStringEncode, treeNode, totalParentBraces)
 
 	*stringDataEncoder = strings.ReplaceAll(*stringDataEncoder, "{Packages}", rootClassName.Name)
 
@@ -1066,7 +1069,7 @@ func RustEncoderCodeGeneration(rootClassName RootClass, stringDataEncoder *strin
 	`
 }
 
-func RustDecoderCodeGeneration(rootClassName RootClass, stringDataDecoder *string, packageName *string, fileName *string, treeNode *TreeNode) {
+func (p *RustParser) DecoderCodeGeneration(rootClassName RootClass, stringDataDecoder *string, packageName *string, fileName *string, treeNode *TreeNode) {
 	squareBrackets := ""
 
 	for i := 0; i < rootClassName.ArrayCount; i++ {
@@ -1104,7 +1107,7 @@ func RustDecoderCodeGeneration(rootClassName RootClass, stringDataDecoder *strin
 	pub mod ` + *packageName + `{
 
 	use crate::` + *packageName + `::RustBuffer::ByteBuff;
-	use crate::` + *packageName + `::`+*fileName+`::` + *packageName + `::{{Packages}};
+	use crate::` + *packageName + `::` + *fileName + `::` + *packageName + `::{{Packages}};
 
 	pub fn ` + *fileName + `_Decoder(byte_arr: Vec<u8>) -> ` + squareBrackets + `{
 
@@ -1178,7 +1181,7 @@ func RustDecoderCodeGeneration(rootClassName RootClass, stringDataDecoder *strin
 	newStringDecode := ""
 	importPackage := rootClassName.Name + ","
 
-	GenerateRustDecoderCode(&importPackage, &currentIterate, &newStringDecode, treeNode, totalParentBraces)
+	p.GenerateDecoderCode(&importPackage, &currentIterate, &newStringDecode, treeNode, totalParentBraces)
 
 	importPackage = strings.TrimSuffix(importPackage, ",")
 	*stringDataDecoder = strings.ReplaceAll(*stringDataDecoder, "{Packages}", importPackage)
