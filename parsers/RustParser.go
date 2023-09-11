@@ -85,7 +85,7 @@ func GenerateRustStruct(classDefinitions string, rootClassName RootClass, global
 
 	goCode := ""
 	for structName, fields := range structs {
-		goCode += fmt.Sprintf("\t #[derive(Debug, Serialize, Deserialize, Default)] \n")
+		goCode += fmt.Sprintf("\t #[derive(Clone, Debug, Default)] \n")
 		goCode += fmt.Sprintf("\t pub struct %s {\n", structName)
 		for _, field := range fields {
 
@@ -130,7 +130,7 @@ func GenerateRustEncodeCode(currentIterate *int, stringData *string, node *TreeN
 				for i := 0; i < child.ArrayCount; i++ {
 					if i == 0 {
 						*stringData += `
-				    bb.put_short(` + path + `.len());
+				    bb.put_short(` + path + `.len() as i16);
 				`
 						*stringData += `
 							for (index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `, _) in ` + path + `.iter().enumerate() {
@@ -140,7 +140,7 @@ func GenerateRustEncodeCode(currentIterate *int, stringData *string, node *TreeN
 					} else {
 						dec += 1
 						*stringData += `
-							bb.put_short(` + path + loopSquares + `.len());
+							bb.put_short(` + path + loopSquares + `.len() as i16);
 						`
 						*stringData += `
 							for (index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `, _) in ` + path + loopSquares + `.iter().enumerate() {
@@ -172,7 +172,7 @@ func GenerateRustEncodeCode(currentIterate *int, stringData *string, node *TreeN
 				for i := 0; i < child.ArrayCount; i++ {
 					if i == 0 {
 						*stringData += `
-				    bb.put_short(` + path + `.len());
+				    bb.put_short(` + path + `.len() as i16);
 				`
 						*stringData += `
 							for (index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `, _) in ` + path + `.iter().enumerate() {
@@ -182,7 +182,7 @@ func GenerateRustEncodeCode(currentIterate *int, stringData *string, node *TreeN
 					} else {
 						dec += 1
 						*stringData += `
-							bb.put_short(` + path + loopSquares + `.len());
+							bb.put_short(` + path + loopSquares + `.len() as i16);
 						`
 						*stringData += `
 							for (index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `, _) in ` + path + loopSquares + `.iter().enumerate() {
@@ -214,7 +214,7 @@ func GenerateRustEncodeCode(currentIterate *int, stringData *string, node *TreeN
 				for i := 0; i < child.ArrayCount; i++ {
 					if i == 0 {
 						*stringData += `
-				    bb.put_short(` + path + `.len());
+				    bb.put_short(` + path + `.len() as i16);
 				`
 						*stringData += `
 							for (index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `, _) in ` + path + `.iter().enumerate() {
@@ -224,7 +224,7 @@ func GenerateRustEncodeCode(currentIterate *int, stringData *string, node *TreeN
 					} else {
 						dec += 1
 						*stringData += `
-							bb.put_short(` + path + loopSquares + `.len());
+							bb.put_short(` + path + loopSquares + `.len() as i16);
 						`
 						*stringData += `
 							for (index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `, _) in ` + path + loopSquares + `.iter().enumerate() {
@@ -256,7 +256,7 @@ func GenerateRustEncodeCode(currentIterate *int, stringData *string, node *TreeN
 				for i := 0; i < child.ArrayCount; i++ {
 					if i == 0 {
 						*stringData += `
-				    bb.put_short(` + path + `.len());
+				    bb.put_short(` + path + `.len() as i16);
 				`
 						*stringData += `
 							for (index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `, _) in ` + path + `.iter().enumerate() {
@@ -266,7 +266,7 @@ func GenerateRustEncodeCode(currentIterate *int, stringData *string, node *TreeN
 					} else {
 						dec += 1
 						*stringData += `
-							bb.put_short(` + path + loopSquares + `.len());
+							bb.put_short(` + path + loopSquares + `.len() as i16);
 						`
 						*stringData += `
 							for (index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `, _) in ` + path + loopSquares + `.iter().enumerate() {
@@ -277,7 +277,7 @@ func GenerateRustEncodeCode(currentIterate *int, stringData *string, node *TreeN
 				}
 
 				*stringData += `
-				bb.put_string(` + path + squares + `);
+				bb.put_string(` + path + squares + `.to_string());
 				`
 
 				for i := 0; i < child.ArrayCount; i++ {
@@ -287,7 +287,7 @@ func GenerateRustEncodeCode(currentIterate *int, stringData *string, node *TreeN
 				}
 			} else {
 				*stringData += `
-				bb.put_string(` + path + `);
+				bb.put_string(` + path + `.to_string());
 			`
 			}
 		case "float":
@@ -298,7 +298,7 @@ func GenerateRustEncodeCode(currentIterate *int, stringData *string, node *TreeN
 				for i := 0; i < child.ArrayCount; i++ {
 					if i == 0 {
 						*stringData += `
-				    bb.put_short(` + path + `.len());
+				    bb.put_short(` + path + `.len() as i16);
 				`
 						*stringData += `
 							for (index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `, _) in ` + path + `.iter().enumerate() {
@@ -308,7 +308,7 @@ func GenerateRustEncodeCode(currentIterate *int, stringData *string, node *TreeN
 					} else {
 						dec += 1
 						*stringData += `
-							bb.put_short(` + path + loopSquares + `.len());
+							bb.put_short(` + path + loopSquares + `.len() as i16);
 						`
 						*stringData += `
 							for (index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `, _) in ` + path + loopSquares + `.iter().enumerate() {
@@ -340,7 +340,7 @@ func GenerateRustEncodeCode(currentIterate *int, stringData *string, node *TreeN
 				for i := 0; i < child.ArrayCount; i++ {
 					if i == 0 {
 						*stringData += `
-				    bb.put_short(` + path + `.len());
+				    bb.put_short(` + path + `.len() as i16);
 				`
 						*stringData += `
 							for (index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `, _) in ` + path + `.iter().enumerate() {
@@ -350,7 +350,7 @@ func GenerateRustEncodeCode(currentIterate *int, stringData *string, node *TreeN
 					} else {
 						dec += 1
 						*stringData += `
-							bb.put_short(` + path + loopSquares + `.len());
+							bb.put_short(` + path + loopSquares + `.len() as i16);
 						`
 						*stringData += `
 							for (index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `, _) in ` + path + loopSquares + `.iter().enumerate() {
@@ -375,11 +375,12 @@ func GenerateRustEncodeCode(currentIterate *int, stringData *string, node *TreeN
 			`
 			}
 		default:
+
 			if child.ArrayCount > 0 {
 				squares := ""
 				for i := 0; i < child.ArrayCount; i++ {
 					*stringData += `
-				    bb.put_short(` + path + `.len());
+				    bb.put_short(` + path + `.len() as i16);
 				`
 					*stringData += `
 						for (index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `, _) in ` + path + `.iter().enumerate() {
@@ -405,7 +406,7 @@ func GenerateRustEncodeCode(currentIterate *int, stringData *string, node *TreeN
 	}
 }
 
-func GenerateRustDecoderCode(currentIterate *int, stringData *string, node *TreeNode, parentName string) {
+func GenerateRustDecoderCode(importPackage *string, currentIterate *int, stringData *string, node *TreeNode, parentName string) {
 	for _, child := range node.Children {
 
 		path := parentName + child.Name
@@ -431,9 +432,9 @@ func GenerateRustDecoderCode(currentIterate *int, stringData *string, node *Tree
 						}
 
 						*stringData += `
-				    let ` + child.Name + `ArrLen` + strconv.Itoa(i) + ` = bb.get_short();
+				    let ` + child.Name + `ArrLen` + strconv.Itoa(i) + ` = bb.get_short() as usize;
 				`
-						*stringData += path + ` = vec![vec![], ` + child.Name + `ArrLen` + strconv.Itoa(i) + `];`
+						*stringData += path + ` = vec![vec![]; ` + child.Name + `ArrLen` + strconv.Itoa(i) + `];`
 
 						*stringData += `
 							for index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + ` in 0..` + child.Name + `ArrLen` + strconv.Itoa(i) + `{
@@ -455,10 +456,14 @@ func GenerateRustDecoderCode(currentIterate *int, stringData *string, node *Tree
 						}
 
 						*stringData += `
-						let ` + child.Name + `ArrLen` + strconv.Itoa(i) + ` = bb.get_short();
+						let ` + child.Name + `ArrLen` + strconv.Itoa(i) + ` = bb.get_short() as usize;
 						`
 
-						*stringData += path + squares + ` = vec![vec![], ` + child.Name + `ArrLen` + strconv.Itoa(i) + `];`
+						if i == child.ArrayCount-1 {
+							*stringData += path + squares + ` = vec![0; ` + child.Name + `ArrLen` + strconv.Itoa(i) + `];`
+						} else {
+							*stringData += path + squares + ` = vec![vec![]; ` + child.Name + `ArrLen` + strconv.Itoa(i) + `];`
+						}
 
 						*stringData += `
 							for index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + ` in 0..` + child.Name + `ArrLen` + strconv.Itoa(i) + `{
@@ -504,9 +509,9 @@ func GenerateRustDecoderCode(currentIterate *int, stringData *string, node *Tree
 						}
 
 						*stringData += `
-				    let ` + child.Name + `ArrLen` + strconv.Itoa(i) + ` = bb.get_short();
+				    let ` + child.Name + `ArrLen` + strconv.Itoa(i) + ` = bb.get_short() as usize;
 				`
-						*stringData += path + ` = vec![vec![], ` + child.Name + `ArrLen` + strconv.Itoa(i) + `];`
+						*stringData += path + ` = vec![vec![]; ` + child.Name + `ArrLen` + strconv.Itoa(i) + `];`
 
 						*stringData += `
 							for index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + ` in 0..` + child.Name + `ArrLen` + strconv.Itoa(i) + `{
@@ -528,10 +533,14 @@ func GenerateRustDecoderCode(currentIterate *int, stringData *string, node *Tree
 						}
 
 						*stringData += `
-						let ` + child.Name + `ArrLen` + strconv.Itoa(i) + ` = bb.get_short();
+						let ` + child.Name + `ArrLen` + strconv.Itoa(i) + ` = bb.get_short() as usize;
 						`
 
-						*stringData += path + squares + ` = vec![vec![], ` + child.Name + `ArrLen` + strconv.Itoa(i) + `];`
+						if i == child.ArrayCount-1 {
+							*stringData += path + squares + ` = vec![0; ` + child.Name + `ArrLen` + strconv.Itoa(i) + `];`
+						} else {
+							*stringData += path + squares + ` = vec![vec![]; ` + child.Name + `ArrLen` + strconv.Itoa(i) + `];`
+						}
 
 						*stringData += `
 							for index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + ` in 0..` + child.Name + `ArrLen` + strconv.Itoa(i) + `{
@@ -577,9 +586,9 @@ func GenerateRustDecoderCode(currentIterate *int, stringData *string, node *Tree
 						}
 
 						*stringData += `
-				    let ` + child.Name + `ArrLen` + strconv.Itoa(i) + ` = bb.get_short();
+				    let ` + child.Name + `ArrLen` + strconv.Itoa(i) + ` = bb.get_short() as usize;
 				`
-						*stringData += path + ` = vec![vec![], ` + child.Name + `ArrLen` + strconv.Itoa(i) + `];`
+						*stringData += path + ` = vec![vec![]; ` + child.Name + `ArrLen` + strconv.Itoa(i) + `];`
 
 						*stringData += `
 							for index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + ` in 0..` + child.Name + `ArrLen` + strconv.Itoa(i) + `{
@@ -601,10 +610,14 @@ func GenerateRustDecoderCode(currentIterate *int, stringData *string, node *Tree
 						}
 
 						*stringData += `
-						let ` + child.Name + `ArrLen` + strconv.Itoa(i) + ` = bb.get_short();
+						let ` + child.Name + `ArrLen` + strconv.Itoa(i) + ` = bb.get_short() as usize;
 						`
 
-						*stringData += path + squares + ` = vec![vec![], ` + child.Name + `ArrLen` + strconv.Itoa(i) + `];`
+						if i == child.ArrayCount-1 {
+							*stringData += path + squares + ` = vec![0; ` + child.Name + `ArrLen` + strconv.Itoa(i) + `];`
+						} else {
+							*stringData += path + squares + ` = vec![vec![]; ` + child.Name + `ArrLen` + strconv.Itoa(i) + `];`
+						}
 
 						*stringData += `
 							for index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + ` in 0..` + child.Name + `ArrLen` + strconv.Itoa(i) + `{
@@ -650,9 +663,9 @@ func GenerateRustDecoderCode(currentIterate *int, stringData *string, node *Tree
 						}
 
 						*stringData += `
-				    let ` + child.Name + `ArrLen` + strconv.Itoa(i) + ` = bb.get_short();
+				    let ` + child.Name + `ArrLen` + strconv.Itoa(i) + ` = bb.get_short() as usize;
 				`
-						*stringData += path + ` = vec![vec![], ` + child.Name + `ArrLen` + strconv.Itoa(i) + `];`
+						*stringData += path + ` = vec![vec![]; ` + child.Name + `ArrLen` + strconv.Itoa(i) + `];`
 
 						*stringData += `
 							for index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + ` in 0..` + child.Name + `ArrLen` + strconv.Itoa(i) + `{
@@ -674,10 +687,14 @@ func GenerateRustDecoderCode(currentIterate *int, stringData *string, node *Tree
 						}
 
 						*stringData += `
-						let ` + child.Name + `ArrLen` + strconv.Itoa(i) + ` = bb.get_short();
+						let ` + child.Name + `ArrLen` + strconv.Itoa(i) + ` = bb.get_short() as usize;
 						`
 
-						*stringData += path + squares + ` = vec![vec![], ` + child.Name + `ArrLen` + strconv.Itoa(i) + `];`
+						if i == child.ArrayCount-1 {
+							*stringData += path + squares + ` = vec!["".to_string(); ` + child.Name + `ArrLen` + strconv.Itoa(i) + `];`
+						} else {
+							*stringData += path + squares + ` = vec![vec![]; ` + child.Name + `ArrLen` + strconv.Itoa(i) + `];`
+						}
 
 						*stringData += `
 							for index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + ` in 0..` + child.Name + `ArrLen` + strconv.Itoa(i) + `{
@@ -723,9 +740,9 @@ func GenerateRustDecoderCode(currentIterate *int, stringData *string, node *Tree
 						}
 
 						*stringData += `
-				    let ` + child.Name + `ArrLen` + strconv.Itoa(i) + ` = bb.get_short();
+				    let ` + child.Name + `ArrLen` + strconv.Itoa(i) + ` = bb.get_short() as usize;
 				`
-						*stringData += path + ` = vec![vec![], ` + child.Name + `ArrLen` + strconv.Itoa(i) + `];`
+						*stringData += path + ` = vec![vec![]; ` + child.Name + `ArrLen` + strconv.Itoa(i) + `];`
 
 						*stringData += `
 							for index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + ` in 0..` + child.Name + `ArrLen` + strconv.Itoa(i) + `{
@@ -747,10 +764,14 @@ func GenerateRustDecoderCode(currentIterate *int, stringData *string, node *Tree
 						}
 
 						*stringData += `
-						let ` + child.Name + `ArrLen` + strconv.Itoa(i) + ` = bb.get_short();
+						let ` + child.Name + `ArrLen` + strconv.Itoa(i) + ` = bb.get_short() as usize;
 						`
 
-						*stringData += path + squares + ` = vec![vec![], ` + child.Name + `ArrLen` + strconv.Itoa(i) + `];`
+						if i == child.ArrayCount-1 {
+							*stringData += path + squares + ` = vec![0.0; ` + child.Name + `ArrLen` + strconv.Itoa(i) + `];`
+						} else {
+							*stringData += path + squares + ` = vec![vec![]; ` + child.Name + `ArrLen` + strconv.Itoa(i) + `];`
+						}
 
 						*stringData += `
 							for index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + ` in 0..` + child.Name + `ArrLen` + strconv.Itoa(i) + `{
@@ -796,9 +817,9 @@ func GenerateRustDecoderCode(currentIterate *int, stringData *string, node *Tree
 						}
 
 						*stringData += `
-				    let ` + child.Name + `ArrLen` + strconv.Itoa(i) + ` = bb.get_short();
+				    let ` + child.Name + `ArrLen` + strconv.Itoa(i) + ` = bb.get_short() as usize;
 				`
-						*stringData += path + ` = vec![vec![], ` + child.Name + `ArrLen` + strconv.Itoa(i) + `];`
+						*stringData += path + ` = vec![vec![]; ` + child.Name + `ArrLen` + strconv.Itoa(i) + `];`
 
 						*stringData += `
 							for index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + ` in 0..` + child.Name + `ArrLen` + strconv.Itoa(i) + `{
@@ -820,10 +841,14 @@ func GenerateRustDecoderCode(currentIterate *int, stringData *string, node *Tree
 						}
 
 						*stringData += `
-						let ` + child.Name + `ArrLen` + strconv.Itoa(i) + ` = bb.get_short();
+						let ` + child.Name + `ArrLen` + strconv.Itoa(i) + ` = bb.get_short() as usize;
 						`
 
-						*stringData += path + squares + ` = vec![vec![], ` + child.Name + `ArrLen` + strconv.Itoa(i) + `];`
+						if i == child.ArrayCount-1 {
+							*stringData += path + squares + ` = vec![false; ` + child.Name + `ArrLen` + strconv.Itoa(i) + `];`
+						} else {
+							*stringData += path + squares + ` = vec![vec![]; ` + child.Name + `ArrLen` + strconv.Itoa(i) + `];`
+						}
 
 						*stringData += `
 							for index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + ` in 0..` + child.Name + `ArrLen` + strconv.Itoa(i) + `{
@@ -851,6 +876,8 @@ func GenerateRustDecoderCode(currentIterate *int, stringData *string, node *Tree
 			}
 		default:
 
+			*importPackage += child.Value + ","
+
 			if child.ArrayCount > 0 {
 				squares := ""
 				arrayCount := child.ArrayCount
@@ -869,10 +896,14 @@ func GenerateRustDecoderCode(currentIterate *int, stringData *string, node *Tree
 					}
 
 					*stringData += `
-					let ` + child.Name + `ArrLen` + strconv.Itoa(i) + ` = bb.get_short();
+					let ` + child.Name + `ArrLen` + strconv.Itoa(i) + ` = bb.get_short() as usize;
 				`
 
-					*stringData += path + ` = vec(vec![], ` + child.Name + `ArrLen` + strconv.Itoa(i) + `);`
+					if i == child.ArrayCount-1 {
+						*stringData += path + ` = vec![` + child.Value + `{..Default::default()}; ` + child.Name + `ArrLen` + strconv.Itoa(i) + `];`
+					} else {
+						*stringData += path + ` = vec![vec![]; ` + child.Name + `ArrLen` + strconv.Itoa(i) + `];`
+					}
 
 					*stringData += `
 							for index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + ` in 0..` + child.Name + `ArrLen` + strconv.Itoa(i) + `{
@@ -888,7 +919,7 @@ func GenerateRustDecoderCode(currentIterate *int, stringData *string, node *Tree
 				}
 			}
 
-			GenerateRustDecoderCode(currentIterate, stringData, child, path+".")
+			GenerateRustDecoderCode(importPackage, currentIterate, stringData, child, path+".")
 		}
 	}
 
@@ -973,29 +1004,32 @@ func RustEncoderCodeGeneration(rootClassName RootClass, stringDataEncoder *strin
 
 		pub mod ` + *packageName + ` {
 
+		use crate::` + *packageName + `::RustBuffer::ByteBuff;
+		use crate::` + *packageName + `::` + *fileName + `::` + *packageName + `::{{Packages}};
+
 		pub fn ` + *fileName + `_Encoder(obj: &` + squareBrackets + `) -> Vec<u8>{
 
 			let mut bb = ByteBuff{
 				multiplier: 10000.0,
-				endian: "big",
+				endian: "big".to_string(),
 				..Default::default()
 			};
 
-			bb.init("big");
+			bb.init("big".to_string());
 	`
 
 	if squareBrackets != "" {
 		for i := 0; i < rootClassName.ArrayCount; i++ {
 			if i == 0 {
 				*stringDataEncoder += `
-			bb.put_short(obj.len());
+			bb.put_short(obj.len() as i16);
 	`
 				*stringDataEncoder += `
 				for (i` + strconv.Itoa(i) + `, _) in obj.iter().enumerate() {
 	`
 			} else {
 				*stringDataEncoder += `
-			bb.put_short(obj` + totalParentBraces + `.len());
+			bb.put_short(obj` + totalParentBraces + `.len() as i16);
 	`
 				*stringDataEncoder += `
 				for (i` + strconv.Itoa(i) + `, _) in obj` + totalParentBraces + `.iter().enumerate() {
@@ -1009,7 +1043,13 @@ func RustEncoderCodeGeneration(rootClassName RootClass, stringDataEncoder *strin
 
 	totalParentBraces = "obj" + totalParentBraces + "."
 
-	GenerateRustEncodeCode(&currentIterate, stringDataEncoder, treeNode, totalParentBraces)
+	newStringEncode := ""
+
+	GenerateRustEncodeCode(&currentIterate, &newStringEncode, treeNode, totalParentBraces)
+
+	*stringDataEncoder = strings.ReplaceAll(*stringDataEncoder, "{Packages}", rootClassName.Name)
+
+	*stringDataEncoder += newStringEncode
 
 	if squareBrackets != "" {
 		for i := 0; i < rootClassName.ArrayCount; i++ {
@@ -1048,9 +1088,9 @@ func RustDecoderCodeGeneration(rootClassName RootClass, stringDataDecoder *strin
 
 	if squareBrackets != "" {
 		rootArrayClass = `
-			let arrLen = bb.get_short();
+			let arrLen = bb.get_short() as usize;
 		`
-		rootArrayClass += "let mut obj:" + squareBrackets + " = vec![vec![], arrLen];"
+		rootArrayClass += "let mut obj:" + squareBrackets + " = vec![vec![]; arrLen];"
 	} else {
 		rootArrayClass = "let mut obj = " + rootClassName.Name + "{..Default::default()};"
 	}
@@ -1063,15 +1103,18 @@ func RustDecoderCodeGeneration(rootClassName RootClass, stringDataDecoder *strin
 
 	pub mod ` + *packageName + `{
 
+	use crate::` + *packageName + `::RustBuffer::ByteBuff;
+	use crate::` + *packageName + `::`+*fileName+`::` + *packageName + `::{{Packages}};
+
 	pub fn ` + *fileName + `_Decoder(byte_arr: Vec<u8>) -> ` + squareBrackets + `{
 
 		let mut bb = ByteBuff{
 			multiplier: 10000.0,
-			endian: "big",
+			endian: "big".to_string(),
 			..Default::default()
 		};
 
-		bb.init("big");
+		bb.init("big".to_string());
 
 		bb.wrap(byte_arr);
 
@@ -1102,10 +1145,18 @@ func RustDecoderCodeGeneration(rootClassName RootClass, stringDataDecoder *strin
 
 				*stringDataDecoder += `
 
-				let arrLen` + strconv.Itoa(i) + ` = bb.get_short();
-
-				obj` + totalParentBraces + ` = vec![vec![], arrLen` + strconv.Itoa(i) + `];
+				let arrLen` + strconv.Itoa(i) + ` = bb.get_short() as usize;
 `
+				if i == rootClassName.ArrayCount-1 {
+					*stringDataDecoder += `
+					obj` + totalParentBraces + ` = vec![` + rootClassName.Name + `{..Default::default()}; arrLen` + strconv.Itoa(i) + `];
+					`
+				} else {
+					*stringDataDecoder += `
+					obj` + totalParentBraces + ` = vec![vec![]; arrLen` + strconv.Itoa(i) + `];
+					`
+				}
+
 				*stringDataDecoder += `
 				for i` + strconv.Itoa(i) + ` in 0..arrLen` + strconv.Itoa(i) + `{
 				`
@@ -1124,7 +1175,15 @@ func RustDecoderCodeGeneration(rootClassName RootClass, stringDataDecoder *strin
 
 	totalParentBraces = "obj" + totalParentBraces + "."
 
-	GenerateRustDecoderCode(&currentIterate, stringDataDecoder, treeNode, totalParentBraces)
+	newStringDecode := ""
+	importPackage := rootClassName.Name + ","
+
+	GenerateRustDecoderCode(&importPackage, &currentIterate, &newStringDecode, treeNode, totalParentBraces)
+
+	importPackage = strings.TrimSuffix(importPackage, ",")
+	*stringDataDecoder = strings.ReplaceAll(*stringDataDecoder, "{Packages}", importPackage)
+
+	*stringDataDecoder += newStringDecode
 
 	if squareBrackets != "" {
 		for i := 0; i < rootClassName.ArrayCount; i++ {

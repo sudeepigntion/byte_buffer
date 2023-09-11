@@ -70,7 +70,7 @@ func main() {
 		stringDataEncoder := ""
 		stringDataDecoder := ""
 
-		finalStruct = "use serde::{Serialize, Deserialize}; \n\n"
+		finalStruct = ""
 		finalStruct += `pub mod ` + *packageName + ` {`
 		modelFileName = *fileName + ".rs"
 		encoderFileName = *fileName + "_encoder.rs"

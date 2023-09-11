@@ -4,16 +4,16 @@ use bytebuffer::Endian;
 #[derive(Debug, Default)]
 pub struct ByteBuff {
     pub multiplier: f64,
-    pub endian: &str,
+    pub endian: String,
     pub buffer: ByteBuffer,
 }
 
 impl ByteBuff {
-    pub fn init(&mut self, endian: &str) {
+    pub fn init(&mut self, endian: String) {
         if endian == "big" {
-            buffer.set_endian(Endian::BigEndian);
+            self.buffer.set_endian(Endian::BigEndian);
         } else {
-            buffer.set_endian(Endian::LittleEndian);
+            self.buffer.set_endian(Endian::LittleEndian);
         }
 
         if self.multiplier == 0.0 {
@@ -21,8 +21,9 @@ impl ByteBuff {
         }
     }
 
-    pub fn wrap(&self, byte_data: Vec<u8>){
-        self.buffer = self.buffer.from_vec(byte_data);
+    pub fn wrap(&mut self, byte_data: Vec<u8>){
+
+        self.buffer = ByteBuffer::from_vec(byte_data);
     }
 
     pub fn put_short(&mut self, value: i16) {
@@ -113,7 +114,7 @@ impl ByteBuff {
     pub fn get_float(&mut self) -> f64 {
         match self.buffer.read_u64() {
             Ok(value) => {
-                return (value / self.multiplier) as f64;
+                return value as f64 / self.multiplier;
             }
             Err(err) => {
                 println!("{:?}", err);
@@ -139,42 +140,42 @@ impl ByteBuff {
     }
 
     pub fn get_string(&mut self) -> String {
-        match self.buffer.read_u8() {
+        return match self.buffer.read_u8() {
             Ok(type_string) => {
                 let mut string_data = String::from("");
 
                 if type_string == 1 {
                     let str_len = self.buffer.read_u8().unwrap();
                     string_data =
-                        String::from_utf8(self.buffer.read_bytes(str_len).unwrap()).unwrap();
+                        String::from_utf8(self.buffer.read_bytes(str_len as usize).unwrap()).unwrap();
                 } else if type_string == 2 {
                     let str_len = self.buffer.read_u16().unwrap();
                     string_data =
-                        String::from_utf8(self.buffer.read_bytes(str_len).unwrap()).unwrap();
+                        String::from_utf8(self.buffer.read_bytes(str_len as usize).unwrap()).unwrap();
                 } else if type_string == 3 {
                     let str_len = self.buffer.read_u32().unwrap();
                     string_data =
-                        String::from_utf8(self.buffer.read_bytes(str_len).unwrap()).unwrap();
+                        String::from_utf8(self.buffer.read_bytes(str_len as usize).unwrap()).unwrap();
                 } else {
                     let str_len = self.buffer.read_u64().unwrap();
                     string_data =
-                        String::from_utf8(self.buffer.read_bytes(str_len).unwrap()).unwrap();
+                        String::from_utf8(self.buffer.read_bytes(str_len as usize).unwrap()).unwrap();
                 }
 
                 if string_data == "X" {
-                    return "";
+                    "".to_string()
                 } else {
-                    return string_data;
+                    string_data
                 }
             }
             Err(err) => {
                 println!("{:?}", err);
-                return "".to_string();
+                "".to_string()
             }
         }
     }
 
     pub fn to_array(&self) -> Vec<u8> {
-        return self.buffer.into_vec();
+        return self.buffer.clone().into_vec();
     }
 }

@@ -1,13 +1,17 @@
 package main
 
 import (
+	"bytes"
+	"compress/gzip"
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
+	"io"
 	"time"
 
 	"github.com/bytebuffer_parser/MySchema"
 	"github.com/bytebuffer_parser/parsers"
+	"github.com/golang/snappy"
 	flatbuffers "github.com/google/flatbuffers/go"
 )
 
@@ -26,7 +30,7 @@ type Person struct {
 	Employee []Employees `json:"Employee" xml:"Employee"`
 }
 
-func SAMPLE_Encoder(obj Person) []byte {
+func SAMPLE_Encoder(compress string, obj Person) []byte {
 
 	bb := parsers.Buffer{
 		FloatIntEncoderVal: 10000.0,
@@ -51,19 +55,63 @@ func SAMPLE_Encoder(obj Person) []byte {
 
 	}
 
-	return bb.Array()
+	// Create a buffer to hold the compressed data
+	var compressedData bytes.Buffer
+
+	if compress == "gzip" {
+		// Create a gzip writer
+		gzipWriter := gzip.NewWriter(&compressedData)
+
+		// Write the data to the gzip writer
+		_, err := gzipWriter.Write(bb.Array())
+		if err != nil {
+			fmt.Println("Error writing data to gzip writer:", err)
+			return nil
+		}
+
+		// Close the gzip writer to flush any remaining data
+		gzipWriter.Close()
+	} else if compress == "snappy" {
+		compressedData.Write(snappy.Encode(nil, bb.Array()))
+	} else {
+		compressedData.Write(bb.Array())
+	}
+
+	return compressedData.Bytes()
 }
 
-func SAMPLE_Decoder(byteArr []byte) Person {
+func SAMPLE_Decoder(compress string, byteArr []byte) Person {
 
 	obj := Person{}
+	var decompressedData []byte
+	// Create a gzip reader
+	if compress == "gzip" {
+		compressedBuffer := bytes.NewReader(byteArr)
+		gzipReader, err := gzip.NewReader(compressedBuffer)
+		if err != nil {
+			fmt.Println("Error creating gzip reader:", err)
+			return obj
+		}
+		defer gzipReader.Close()
+
+		// Read the decompressed data
+		decompressedData, err = io.ReadAll(gzipReader)
+		if err != nil {
+			fmt.Println("Error reading decompressed data:", err)
+			return obj
+		}
+	} else if compress == "snappy" {
+		decompressedData, _ = snappy.Decode(nil, byteArr)
+	} else {
+		decompressedData = byteArr
+	}
 
 	bb := parsers.Buffer{
 		FloatIntEncoderVal: 10000.0,
 		Endian:             "big",
 	}
 
-	bb.Wrap(byteArr)
+	bb.Wrap(decompressedData)
 
 	obj.Epoch = bb.GetLongInteger()
 
@@ -142,58 +190,66 @@ func main() {
 	}
 
 	person.Employee = []Employees{}
-	for i := 0; i < 100000; i++ {
+	for i := 0; i < 10000000; i++ {
 		person.Employee = append(person.Employee, Employees{Name: "Jane Smith", Salary: 60000.0})
 	}
 
-	fmt.Println("Encoding........................")
+	iteration := 1
+
+	fmt.Println("Encoding-decoding........................")
 
 	start := time.Now()
-	data := SAMPLE_Encoder(person)
-	fmt.Println("bytebuffer encoding: ", time.Since(start))
-	fmt.Println("bytebuffer length: ", len(data))
+	for i := 0; i < iteration; i++ {
+		data := SAMPLE_Encoder("gzip", person)
+
+		if i == 0 {
+			fmt.Println("bytebuffer length: ", len(data))
+		}
+		SAMPLE_Decoder("gzip", data)
+	}
+	fmt.Println("bytebuffer encoding-decoding: ", time.Since(start))
 
 	start = time.Now()
-	flatbufferData := createFlatBuffer(person)
-	fmt.Println("flatbuffer encoding: ", time.Since(start))
-	fmt.Println("flatbuffer length: ", len(flatbufferData))
-
-	start = time.Now()
-	jsonE, _ := json.Marshal(person)
-	fmt.Println("json encoding: ", time.Since(start))
-	fmt.Println("json length: ", len(jsonE))
-
-	start = time.Now()
-	xmlStr, _ := xml.Marshal(person)
-	fmt.Println("xml encoding: ", time.Since(start))
-	fmt.Println("xml length: ", len(xmlStr))
-
-	fmt.Println("Decoding........................")
-
-	start = time.Now()
-	SAMPLE_Decoder(data)
-	fmt.Println("bytebuffer decoding: ", time.Since(start))
-
-	start = time.Now()
-	personRead := MySchema.GetRootAsPerson(flatbufferData, 0)
-	personRead.Epoch()
-	personRead.Watch()
-	personRead.Xyz()
-	personRead.Salary()
-	for i := 0; i < personRead.EmployeeLength(); i++ {
-		employeesRead := new(MySchema.Employees)
-		if personRead.Employee(employeesRead, i) {
+	for i := 0; i < iteration; i++ {
+		flatbufferData := createFlatBuffer(person)
+		if i == 0 {
+			fmt.Println("flatbuffer length: ", len(flatbufferData))
+		}
+		personRead := MySchema.GetRootAsPerson(flatbufferData, 0)
+		personRead.Epoch()
+		personRead.Watch()
+		personRead.Xyz()
+		personRead.Salary()
+		for i := 0; i < personRead.EmployeeLength(); i++ {
+			employeesRead := new(MySchema.Employees)
+			if personRead.Employee(employeesRead, i) {
+			}
 		}
 	}
-	fmt.Println("flatbuffer decoding: ", time.Since(start))
+	fmt.Println("flatbuffer encoding-decoding: ", time.Since(start))
 
 	start = time.Now()
-	p := Person{}
-	json.Unmarshal(jsonE, &p)
-	fmt.Println("json decoding: ", time.Since(start))
+	for i := 0; i < iteration; i++ {
+		jsonE, _ := json.Marshal(person)
+		// jsonE = snappy.Encode(nil, jsonE)
+		if i == 0 {
+			fmt.Println("json length: ", len(jsonE))
+		}
+		p := Person{}
+		json.Unmarshal(jsonE, &p)
+	}
+	fmt.Println("json encoding-decoding: ", time.Since(start))
 
 	start = time.Now()
-	s := Person{}
-	xml.Unmarshal(xmlStr, &s)
-	fmt.Println("xml decoding: ", time.Since(start))
+	for i := 0; i < iteration; i++ {
+		xmlStr, _ := xml.Marshal(person)
+		// xmlStr = snappy.Encode(nil, xmlStr)
+		if i == 0 {
+			fmt.Println("xml length: ", len(xmlStr))
+		}
+		s := Person{}
+		xml.Unmarshal(xmlStr, &s)
+	}
+	fmt.Println("xml encoding-decoding: ", time.Since(start))
+
 }
