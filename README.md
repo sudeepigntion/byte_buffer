@@ -2,6 +2,8 @@
 ByteBuffer Generator
 
     go run bytebuffer.go -fileName=ByteBufferClass -package=packageName -language=golang
+    go run bytebuffer.go -fileName=ByteBufferClass -package=packageName -language=rust
+    go run bytebuffer.go -fileName=ByteBufferClass -package=packageName -language=csharp
     
     It will generate 3 files (1 class file, 1 encoder file, and 1 decoder file)
     
