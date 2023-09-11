@@ -32,7 +32,7 @@ ByteBuffer Generator
     xml length:  66000102
     xml encoding-decoding:  2.366141583s
 
-    After gzip compression in byte buffer, It's time is almost equal to flat buffer but the size decreased to 480KB the flat buffer size without compression is 320MB
+    After gzip compression in byte buffer, Its time is almost equal to flat buffer but the size decreased to 480KB the flat buffer size without compression is 320MB
     
     Encoding-decoding........................
     bytebuffer length:  485225
@@ -46,10 +46,13 @@ ByteBuffer Generator
 
     
     It is 2-3 times faster than protobuff and flatbuffer. Depending on the structure of the class
-    Currently supporting only Golang, Rust and C# upcoming language support: Java, Javascript and NodeJS
-    For sample example check the file generated using sample.bb (sample.go, sample_encoder.go and sample_decoder.go)
+    Currently supporting only Golang, Rust, and C# upcoming language support: Java, Javascript, and NodeJS
+    For a sample example check the file generated using sample.bb (sample.go, sample_encoder.go and sample_decoder.go)
 
     To run the generator
     1. Install Golang
-    2. Create a bytebuffer class with .bb extension for sample check (sample.bb)
+    2. Create a byte buffer class with .bb extension for sample check (sample.bb)
     3. Then run go run bytebuffer.go -fileName=yourbytebufferfile.bb -language=golang -package=yourpackagename
+
+    For Rust, you must have this crate
+    https://docs.rs/bytebuffer/latest/bytebuffer/struct.ByteBuffer.html
