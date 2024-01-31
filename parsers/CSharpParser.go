@@ -145,7 +145,7 @@ namespace ` + *packageName + ` {
 
 	class Encoder{
 
-		public byte[] ` + *fileName + `_Encoder(` + squareBrackets + rootClassName.Name + ` obj){
+		public byte[] ` + *fileName + `_Encoder(` + rootClassName.Name + squareBrackets + ` obj){
 
 			ByteBuffer bb = new ByteBuffer();
 `
@@ -224,7 +224,7 @@ func (p *CSharpParser) GenerateEncodeCode(currentIterate *int, stringData *strin
 							bb.PutShort(Convert.ToInt16(` + path + loopSquares + `.Length));
 						`
 						*stringData += `
-								for (int index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + ` =0;index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `<` + path + loopSquares + `;index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `++){
+								for (int index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + ` =0;index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `<` + path + loopSquares + `.Length;index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `++){
 							`
 						squares += `[index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `]`
 						loopSquares = squares
@@ -266,7 +266,7 @@ func (p *CSharpParser) GenerateEncodeCode(currentIterate *int, stringData *strin
 							bb.PutShort(Convert.ToInt16(` + path + loopSquares + `.Length));
 						`
 						*stringData += `
-								for (int index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + ` =0;index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `<` + path + loopSquares + `;index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `++){
+								for (int index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + ` =0;index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `<` + path + loopSquares + `.Length;index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `++){
 							`
 						squares += `[index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `]`
 						loopSquares = squares
@@ -308,7 +308,7 @@ func (p *CSharpParser) GenerateEncodeCode(currentIterate *int, stringData *strin
 							bb.PutShort(Convert.ToInt16(` + path + loopSquares + `.Length));
 						`
 						*stringData += `
-								for (int index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + ` =0;index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `<` + path + loopSquares + `;index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `++){
+								for (int index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + ` =0;index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `<` + path + loopSquares + `.Length;index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `++){
 							`
 						squares += `[index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `]`
 						loopSquares = squares
@@ -350,7 +350,7 @@ func (p *CSharpParser) GenerateEncodeCode(currentIterate *int, stringData *strin
 							bb.PutShort(Convert.ToInt16(` + path + loopSquares + `.Length));
 						`
 						*stringData += `
-								for (int index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + ` =0;index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `<` + path + loopSquares + `;index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `++){
+								for (int index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + ` =0;index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `<` + path + loopSquares + `.Length;index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `++){
 							`
 						squares += `[index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `]`
 						loopSquares = squares
@@ -392,7 +392,7 @@ func (p *CSharpParser) GenerateEncodeCode(currentIterate *int, stringData *strin
 							bb.PutShort(Convert.ToInt16(` + path + loopSquares + `.Length));
 						`
 						*stringData += `
-								for (int index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + ` =0;index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `<` + path + loopSquares + `;index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `++){
+								for (int index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + ` =0;index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `<` + path + loopSquares + `.Length;index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `++){
 							`
 						squares += `[index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `]`
 						loopSquares = squares
@@ -434,7 +434,7 @@ func (p *CSharpParser) GenerateEncodeCode(currentIterate *int, stringData *strin
 							bb.PutShort(Convert.ToInt16(` + path + loopSquares + `.Length));
 						`
 						*stringData += `
-								for (int index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + ` =0;index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `<` + path + loopSquares + `;index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `++){
+								for (int index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + ` =0;index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `<` + path + loopSquares + `.Length;index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `++){
 							`
 						squares += `[index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `]`
 						loopSquares = squares
@@ -523,7 +523,7 @@ namespace ` + *packageName + ` {
 
 	class Decoder{
 
-		public ` + squareBrackets + rootClassName.Name + ` ` + *fileName + `_Decoder(byte[] byteArr){
+		public ` + rootClassName.Name + squareBrackets + ` ` + *fileName + `_Decoder(byte[] byteArr){
 
 			ByteBuffer bb = new ByteBuffer();
 
@@ -564,6 +564,9 @@ namespace ` + *packageName + ` {
 			totalParentBraces += "[i" + strconv.Itoa(i) + "]"
 		}
 
+		*stringDataDecoder += `obj` + totalParentBraces + ` = new ` + rootClassName.Name + `();
+        `
+
 	}
 
 	totalParentBraces = "obj" + totalParentBraces + "."
@@ -592,7 +595,6 @@ namespace ` + *packageName + ` {
 func (p *CSharpParser) GenerateDecoderCode(currentIterate *int, stringData *string, node *TreeNode, parentName string) {
 
 	for _, child := range node.Children {
-
 		path := parentName + child.Name
 
 		switch child.Value {
@@ -618,7 +620,8 @@ func (p *CSharpParser) GenerateDecoderCode(currentIterate *int, stringData *stri
 
 						*stringData += `int ` + child.Name + `ArrLen` + strconv.Itoa(i) + ` = (int)bb.GetShort();
 				`
-						*stringData += child.Value + arrayBraces + " " + path + squares + `= new int` + firstArrBraces + `;`
+						//*stringData += child.Value + arrayBraces + " " + path + squares + `= new int` + firstArrBraces + `;`
+						*stringData += path + squares + `= new int` + firstArrBraces + `;`
 
 						*stringData += `
 							for (int index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `=0;index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `<` + child.Name + `ArrLen` + strconv.Itoa(i) + `;index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `++){
@@ -641,11 +644,11 @@ func (p *CSharpParser) GenerateDecoderCode(currentIterate *int, stringData *stri
 						}
 
 						*stringData += `
-						int ` + child.Name + `ArrLen` + strconv.Itoa(i) + ` := (int)bb.GetShort();
+						int ` + child.Name + `ArrLen` + strconv.Itoa(i) + ` = (int)bb.GetShort();
 						`
 
-						*stringData += child.Value + arrayBraces + " " + path + squares + `= new int` + firstArrBraces + `;`
-						// *stringData += path + squares + `= make(` + arrayBraces + `int, ` + child.Name + `ArrLen` + strconv.Itoa(i) + `)`
+						// *stringData += child.Value + arrayBraces + " " + path + squares + `= new int` + firstArrBraces + `;`
+						*stringData += path + squares + `= new int` + firstArrBraces + `;`
 
 						*stringData += `
 							for (int index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `=0;index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `<` + child.Name + `ArrLen` + strconv.Itoa(i) + `;index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `++){
@@ -693,7 +696,8 @@ func (p *CSharpParser) GenerateDecoderCode(currentIterate *int, stringData *stri
 
 						*stringData += `int ` + child.Name + `ArrLen` + strconv.Itoa(i) + ` = (int)bb.GetShort();
 				`
-						*stringData += child.Value + arrayBraces + " " + path + squares + `= new long` + firstArrBraces + `;`
+						//*stringData += child.Value + arrayBraces + " " + path + squares + `= new long` + firstArrBraces + `;`
+						*stringData += path + squares + `= new long` + firstArrBraces + `;`
 
 						*stringData += `
 							for (int index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `=0;index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `<` + child.Name + `ArrLen` + strconv.Itoa(i) + `;index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `++){
@@ -716,11 +720,11 @@ func (p *CSharpParser) GenerateDecoderCode(currentIterate *int, stringData *stri
 						}
 
 						*stringData += `
-						int ` + child.Name + `ArrLen` + strconv.Itoa(i) + ` := (int)bb.GetShort();
+						int ` + child.Name + `ArrLen` + strconv.Itoa(i) + ` = (int)bb.GetShort();
 						`
 
-						*stringData += child.Value + arrayBraces + " " + path + squares + `= new long` + firstArrBraces + `;`
-						// *stringData += path + squares + `= make(` + arrayBraces + `int, ` + child.Name + `ArrLen` + strconv.Itoa(i) + `)`
+						//*stringData += child.Value + arrayBraces + " " + path + squares + `= new long` + firstArrBraces + `;`
+						*stringData += path + squares + `= new long` + firstArrBraces + `;`
 
 						*stringData += `
 							for (int index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `=0;index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `<` + child.Name + `ArrLen` + strconv.Itoa(i) + `;index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `++){
@@ -791,7 +795,7 @@ func (p *CSharpParser) GenerateDecoderCode(currentIterate *int, stringData *stri
 						}
 
 						*stringData += `
-						int ` + child.Name + `ArrLen` + strconv.Itoa(i) + ` := (int)bb.GetShort();
+						int ` + child.Name + `ArrLen` + strconv.Itoa(i) + ` = (int)bb.GetShort();
 						`
 
 						*stringData += path + squares + `= new short` + firstArrBraces + `;`
@@ -866,7 +870,7 @@ func (p *CSharpParser) GenerateDecoderCode(currentIterate *int, stringData *stri
 						}
 
 						*stringData += `
-						int ` + child.Name + `ArrLen` + strconv.Itoa(i) + ` := (int)bb.GetShort();
+						int ` + child.Name + `ArrLen` + strconv.Itoa(i) + ` = (int)bb.GetShort();
 						`
 
 						*stringData += path + squares + `= new string` + firstArrBraces + `;`
@@ -942,7 +946,7 @@ func (p *CSharpParser) GenerateDecoderCode(currentIterate *int, stringData *stri
 						}
 
 						*stringData += `
-						int ` + child.Name + `ArrLen` + strconv.Itoa(i) + ` := (int)bb.GetShort();
+						int ` + child.Name + `ArrLen` + strconv.Itoa(i) + ` = (int)bb.GetShort();
 						`
 
 						*stringData += path + squares + `= new double` + firstArrBraces + `;`
@@ -1017,7 +1021,7 @@ func (p *CSharpParser) GenerateDecoderCode(currentIterate *int, stringData *stri
 						}
 
 						*stringData += `
-						int ` + child.Name + `ArrLen` + strconv.Itoa(i) + ` := (int)bb.GetShort();
+						int ` + child.Name + `ArrLen` + strconv.Itoa(i) + ` = (int)bb.GetShort();
 						`
 
 						*stringData += path + squares + `= new bool` + firstArrBraces + `;`
@@ -1034,7 +1038,7 @@ func (p *CSharpParser) GenerateDecoderCode(currentIterate *int, stringData *stri
 				}
 
 				*stringData += `
-				` + path + squares + ` = bb.GetBool();
+				` + path + squares + ` = bb.GetBoolean();
 				`
 
 				for i := 0; i < child.ArrayCount; i++ {
@@ -1044,7 +1048,7 @@ func (p *CSharpParser) GenerateDecoderCode(currentIterate *int, stringData *stri
 				}
 			} else {
 				*stringData += `
-				` + path + ` = bb.GetBool();
+				` + path + ` = bb.GetBoolean();
 			`
 			}
 		default:
@@ -1077,9 +1081,15 @@ func (p *CSharpParser) GenerateDecoderCode(currentIterate *int, stringData *stri
 					squares += `[index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `]`
 
 					path += `[index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + `]`
+
+					*stringData += path + ` = new ` + child.Value + `();
+					`
 					*currentIterate += 1
 					arrayCount -= 1
 				}
+			} else {
+				*stringData += path + ` = new ` + child.Value + `();
+			`
 			}
 
 			p.GenerateDecoderCode(currentIterate, stringData, child, path+".")
