@@ -437,7 +437,11 @@ func (p *RustParser) GenerateDecoderCode(importPackage *string, currentIterate *
 						*stringData += `
 				    let ` + child.Name + `ArrLen` + strconv.Itoa(i) + ` = bb.get_short() as usize;
 				`
-						*stringData += path + ` = vec![vec![]; ` + child.Name + `ArrLen` + strconv.Itoa(i) + `];`
+						if i == child.ArrayCount-1 {
+							*stringData += path + ` = vec![0; ` + child.Name + `ArrLen` + strconv.Itoa(i) + `];`
+						} else {
+							*stringData += path + ` = vec![vec![]; ` + child.Name + `ArrLen` + strconv.Itoa(i) + `];`
+						}
 
 						*stringData += `
 							for index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + ` in 0..` + child.Name + `ArrLen` + strconv.Itoa(i) + `{
@@ -514,7 +518,12 @@ func (p *RustParser) GenerateDecoderCode(importPackage *string, currentIterate *
 						*stringData += `
 				    let ` + child.Name + `ArrLen` + strconv.Itoa(i) + ` = bb.get_short() as usize;
 				`
-						*stringData += path + ` = vec![vec![]; ` + child.Name + `ArrLen` + strconv.Itoa(i) + `];`
+
+						if i == child.ArrayCount-1 {
+							*stringData += path + ` = vec![0; ` + child.Name + `ArrLen` + strconv.Itoa(i) + `];`
+						} else {
+							*stringData += path + ` = vec![vec![]; ` + child.Name + `ArrLen` + strconv.Itoa(i) + `];`
+						}
 
 						*stringData += `
 							for index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + ` in 0..` + child.Name + `ArrLen` + strconv.Itoa(i) + `{
@@ -591,7 +600,11 @@ func (p *RustParser) GenerateDecoderCode(importPackage *string, currentIterate *
 						*stringData += `
 				    let ` + child.Name + `ArrLen` + strconv.Itoa(i) + ` = bb.get_short() as usize;
 				`
-						*stringData += path + ` = vec![vec![]; ` + child.Name + `ArrLen` + strconv.Itoa(i) + `];`
+						if i == child.ArrayCount-1 {
+							*stringData += path + ` = vec![0; ` + child.Name + `ArrLen` + strconv.Itoa(i) + `];`
+						} else {
+							*stringData += path + ` = vec![vec![]; ` + child.Name + `ArrLen` + strconv.Itoa(i) + `];`
+						}
 
 						*stringData += `
 							for index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + ` in 0..` + child.Name + `ArrLen` + strconv.Itoa(i) + `{
@@ -668,7 +681,11 @@ func (p *RustParser) GenerateDecoderCode(importPackage *string, currentIterate *
 						*stringData += `
 				    let ` + child.Name + `ArrLen` + strconv.Itoa(i) + ` = bb.get_short() as usize;
 				`
-						*stringData += path + ` = vec![vec![]; ` + child.Name + `ArrLen` + strconv.Itoa(i) + `];`
+						if i == child.ArrayCount-1 {
+							*stringData += path + ` = vec!["".to_string(); ` + child.Name + `ArrLen` + strconv.Itoa(i) + `];`
+						} else {
+							*stringData += path + ` = vec![vec![]; ` + child.Name + `ArrLen` + strconv.Itoa(i) + `];`
+						}
 
 						*stringData += `
 							for index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + ` in 0..` + child.Name + `ArrLen` + strconv.Itoa(i) + `{
@@ -745,7 +762,11 @@ func (p *RustParser) GenerateDecoderCode(importPackage *string, currentIterate *
 						*stringData += `
 				    let ` + child.Name + `ArrLen` + strconv.Itoa(i) + ` = bb.get_short() as usize;
 				`
-						*stringData += path + ` = vec![vec![]; ` + child.Name + `ArrLen` + strconv.Itoa(i) + `];`
+						if i == child.ArrayCount-1 {
+							*stringData += path + squares + ` = vec![0.0; ` + child.Name + `ArrLen` + strconv.Itoa(i) + `];`
+						} else {
+							*stringData += path + squares + ` = vec![vec![]; ` + child.Name + `ArrLen` + strconv.Itoa(i) + `];`
+						}
 
 						*stringData += `
 							for index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + ` in 0..` + child.Name + `ArrLen` + strconv.Itoa(i) + `{
@@ -822,7 +843,11 @@ func (p *RustParser) GenerateDecoderCode(importPackage *string, currentIterate *
 						*stringData += `
 				    let ` + child.Name + `ArrLen` + strconv.Itoa(i) + ` = bb.get_short() as usize;
 				`
-						*stringData += path + ` = vec![vec![]; ` + child.Name + `ArrLen` + strconv.Itoa(i) + `];`
+						if i == child.ArrayCount-1 {
+							*stringData += path + squares + ` = vec![false; ` + child.Name + `ArrLen` + strconv.Itoa(i) + `];`
+						} else {
+							*stringData += path + squares + ` = vec![vec![]; ` + child.Name + `ArrLen` + strconv.Itoa(i) + `];`
+						}
 
 						*stringData += `
 							for index` + strconv.Itoa(*currentIterate) + strconv.Itoa(i) + ` in 0..` + child.Name + `ArrLen` + strconv.Itoa(i) + `{
